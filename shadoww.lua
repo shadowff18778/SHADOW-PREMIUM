@@ -555,6 +555,8 @@ end
 -- FONCTIONS CHEATS (MISE À JOUR)
 -- =========================
 -- Ajout des boutons dans la page principale
+local buttonYMain = 0.1
+local spacingMain = 0.18
 createButton("Vol", mainPage, "flyEnabled", function(state)
     local hrp = character:FindFirstChild("HumanoidRootPart")
     local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -616,14 +618,17 @@ createButton("Vol", mainPage, "flyEnabled", function(state)
         humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
 end)
+buttonYMain = buttonYMain + spacingMain
 
 createButton("Vitesse", mainPage, "speedEnabled", function(state)
     character.Humanoid.WalkSpeed = state and 100 or 16
 end)
+buttonYMain = buttonYMain + spacingMain
 
 createButton("Saut", mainPage, "jumpEnabled", function(state)
     character.Humanoid.JumpPower = state and 150 or 50
 end)
+buttonYMain = buttonYMain + spacingMain
 
 createButton("Noclip", mainPage, "noclip", function(state)
     RS.Stepped:Connect(function()
@@ -636,6 +641,7 @@ createButton("Noclip", mainPage, "noclip", function(state)
         end
     end)
 end)
+buttonYMain = buttonYMain + spacingMain
 
 -- Boutons pour la nouvelle page "Hacks"
 local buttonYHack = 0.1
@@ -672,6 +678,125 @@ trackerLabel.BackgroundTransparency = 1
 createHackButton("Tracker", "trackerEnabled", function(state)
     trackerFrame.Visible = state
 end)
+
+-- LOGIQUE D'AFFICHAGE DES BOUTONS ET DES PAGES
+settingsBtn.MouseButton1Click:Connect(function()
+    settingsBtn.Visible = false
+    backArrowBtn.Visible = true
+    settingsPage.Visible = true
+    mainPage.Visible = false
+end)
+
+backArrowBtn.MouseButton1Click:Connect(function()
+    settingsBtn.Visible = true
+    backArrowBtn.Visible = false
+    settingsPage.Visible = false
+    infoPage.Visible = false
+    gamePage.Visible = false
+    hackPage.Visible = false
+    mainPage.Visible = true
+end)
+
+infoBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    infoPage.Visible = true
+end)
+gameSetBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    gamePage.Visible = true
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    closeFrame(frame)
+    reopenBtn.Visible = true
+end)
+
+reopenBtn.MouseButton1Click:Connect(function()
+    openFrame(frame)
+    reopenBtn.Visible = false
+end)
+
+-- Signature RGB
+local signature = Instance.new("TextLabel", frame)
+signature.Size = UDim2.new(1,0,0,15)
+signature.Position = UDim2.new(0,0,1,-20)
+signature.Text = "Powered by SHADOW"
+signature.Font = Enum.Font.GothamBold
+signature.TextSize = 12
+signature.TextColor3 = Color3.fromRGB(255,0,0)
+signature.BackgroundTransparency = 1
+signature.TextScaled = false
+signature.TextXAlignment = Enum.TextXAlignment.Center
+
+
+spawn(function()
+    while true do
+        for i=0,1,0.01 do
+            signature.TextColor3 = Color3.fromHSV(i,1,1)
+            wait(0.02)
+        end
+    end
+end)
+
+-- =========================
+-- VARIABLES GLOBALES CHEATS
+-- =========================
+_G.flyEnabled = false
+_G.speedEnabled = false
+_G.jumpEnabled = false
+_G.noclip = false
+_G.killAuraEnabled = false
+_G.nameViewEnabled = false
+_G.trackerEnabled = false
+
+local buttonY = 0.1
+local spacing = 0.18
+
+-- Fonction pour animer la couleur du bouton
+local function animateButtonColor(btn, startColor, endColor, duration)
+    local startTime = tick()
+    while tick() - startTime < duration do
+        local progress = (tick() - startTime) / duration
+        btn.BackgroundColor3 = startColor:Lerp(endColor, progress)
+        wait()
+    end
+    btn.BackgroundColor3 = endColor
+end
+
+local function createButton(name,parent,toggleVar,callback)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size = UDim2.new(0,280,0,35)
+    btn.Position = UDim2.new(0.5,-140,buttonY,0)
+    btn.Text = name..": OFF"
+    local originalColor = Color3.fromRGB(30,30,30)
+    local onColor = Color3.fromRGB(0, 180, 0)
+    local originalStrokeColor = Color3.fromRGB(255,50,50)
+    local onStrokeColor = Color3.fromRGB(0, 255, 0)
+    
+    btn.BackgroundColor3 = originalColor
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 20
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+    local btnStroke = Instance.new("UIStroke", btn)
+    btnStroke.Color = originalStrokeColor
+    btnStroke.Thickness = 2
+
+    btn.MouseButton1Click:Connect(function()
+        _G[toggleVar] = not _G[toggleVar]
+        btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
+        callback(_G[toggleVar])
+        
+        if _G[toggleVar] then
+            animateButtonColor(btn, originalColor, onColor, 0.2)
+            btnStroke.Color = onStrokeColor
+        else
+            btn.BackgroundColor3 = originalColor
+            btnStroke.Color = originalStrokeColor
+        end
+    end)
+    return btn
+end
 
 -- LOGIQUE GLOBALE DANS UNE BOUCLE
 local nameTags = {}
