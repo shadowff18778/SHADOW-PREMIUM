@@ -1,16 +1,13 @@
--- Ceci est la version corrigée du script. Copie tout ce code et remplace le contenu de "shadow.lua" sur ton GitHub avec.
-
 game.StarterGui:SetCore("SendNotification", {
-	Title = "😈SHADOW HUB😈",
-	Text = "chargement... 😈",
-	Duration = 7
+    Title = "😈SHADOW HUB😈",
+    Text = "chargement... 😈",
+    Duration = 7
 })
 
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local camera = workspace.CurrentCamera
 local RS = game:GetService("RunService")
-local TS = game:GetService("TweenService") -- Ajout de TweenService
 
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "ShadowHub"
@@ -82,24 +79,23 @@ frame.Visible = false
 frame.ClipsDescendants = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,15)
 
--- Animation ouverture avec TweenService
+-- Animation ouverture
 local function openFrame(f)
-	f.Visible = true
-	f.Size = UDim2.new(0,0,0,0)
-	local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, 0) -- Durée de 0.25 secondes
-	local properties = {Size = UDim2.new(0,400,0,300)}
-	local tween = TS:Create(f, tweenInfo, properties)
-	tween:Play()
+    f.Visible = true
+    f.Size = UDim2.new(0,0,0,0)
+    for i=0,1,0.05 do
+        f.Size = UDim2.new(0,400*i,0,300*i)
+        wait(0.01)
+    end
 end
 
--- Animation fermeture avec TweenService
+-- Animation fermeture
 local function closeFrame(f)
-	local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, 0) -- Durée de 0.25 secondes
-	local properties = {Size = UDim2.new(0,0,0,0)}
-	local tween = TS:Create(f, tweenInfo, properties)
-	tween:Play()
-	tween.Completed:Wait()
-	f.Visible = false
+    for i=1,0,-0.05 do
+        f.Size = UDim2.new(0,400*i,0,300*i)
+        wait(0.01)
+    end
+    f.Visible = false
 end
 
 -- HEADER
@@ -190,8 +186,8 @@ backInfoBtn.Font = Enum.Font.GothamBold
 backInfoBtn.TextSize = 20
 Instance.new("UICorner", backInfoBtn).CornerRadius = UDim.new(0,10)
 backInfoBtn.MouseButton1Click:Connect(function()
-	infoPage.Visible = false
-	settingsPage.Visible = true
+    infoPage.Visible = false
+    settingsPage.Visible = true
 end)
 
 -- ScrollingFrame pour la liste des joueurs
@@ -219,47 +215,47 @@ infoText.TextXAlignment = Enum.TextXAlignment.Left
 
 -- Fonction pour créer les boutons des joueurs
 local function createPlayerButtons()
-	-- Supprimer les anciens boutons (sauf le texte d’en-tête)
-	for _, child in pairs(playerList:GetChildren()) do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
-	end
+    -- Supprimer les anciens boutons (sauf le texte d’en-tête)
+    for _, child in pairs(playerList:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
 
-	-- Créer un bouton pour chaque joueur
-	for _, plr in pairs(game.Players:GetPlayers()) do
-		if plr ~= player then
-			local playerBtn = Instance.new("TextButton", playerList)
-			playerBtn.Size = UDim2.new(1, -10, 0, 30)
-			playerBtn.Text = plr.Name
-			playerBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-			playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
-			playerBtn.Font = Enum.Font.Gotham
-			playerBtn.TextSize = 18
-			Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
+    -- Créer un bouton pour chaque joueur
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= player then
+            local playerBtn = Instance.new("TextButton", playerList)
+            playerBtn.Size = UDim2.new(1, -10, 0, 30)
+            playerBtn.Text = plr.Name
+            playerBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+            playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
+            playerBtn.Font = Enum.Font.Gotham
+            playerBtn.TextSize = 18
+            Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
 
-			playerBtn.MouseButton1Click:Connect(function()
-				if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-					character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position + Vector3.new(0,3,0))
-				end
-			end)
-		end
-	end
+            playerBtn.MouseButton1Click:Connect(function()
+                if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position + Vector3.new(0,3,0))
+                end
+            end)
+        end
+    end
 
-	-- Ajuste la taille du canvas pour activer le scroll si besoin
-	playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
+    -- Ajuste la taille du canvas pour activer le scroll si besoin
+    playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
 end
 
 -- Quand on clique sur "Infos Joueurs"
 infoBtn.MouseButton1Click:Connect(function()
-	settingsPage.Visible = false
-	infoPage.Visible = true
-	spawn(function()
-		while infoPage.Visible do
-			createPlayerButtons()
-			wait(1)
-		end
-	end)
+    settingsPage.Visible = false
+    infoPage.Visible = true
+    spawn(function()
+        while infoPage.Visible do
+            createPlayerButtons()
+            wait(1)
+        end
+    end)
 end)
 
 
@@ -292,8 +288,8 @@ backGameBtn.Font = Enum.Font.GothamBold
 backGameBtn.TextSize = 20
 Instance.new("UICorner", backGameBtn).CornerRadius = UDim.new(0,10)
 backGameBtn.MouseButton1Click:Connect(function()
-	gamePage.Visible = false
-	settingsPage.Visible = true
+    gamePage.Visible = false
+    settingsPage.Visible = true
 end)
 
 -- Teleport buttons
@@ -331,34 +327,34 @@ local teleportPoint
 local marker
 
 setPointBtn.MouseButton1Click:Connect(function()
-	teleportPoint = character.HumanoidRootPart.Position
-	if marker then marker:Destroy() end
-	marker = Instance.new("Part", workspace)
-	marker.Size = Vector3.new(2,2,2)
-	marker.Anchored = true
-	marker.CanCollide = false
-	marker.BrickColor = BrickColor.Red()
-	marker.Position = teleportPoint + Vector3.new(0,2,0)
-	marker.Name = "TeleportMarker"
+    teleportPoint = character.HumanoidRootPart.Position
+    if marker then marker:Destroy() end
+    marker = Instance.new("Part", workspace)
+    marker.Size = Vector3.new(2,2,2)
+    marker.Anchored = true
+    marker.CanCollide = false
+    marker.BrickColor = BrickColor.Red()
+    marker.Position = teleportPoint + Vector3.new(0,2,0)
+    marker.Name = "TeleportMarker"
 end)
 
 goPointBtn.MouseButton1Click:Connect(function()
-	if teleportPoint then
-		character.HumanoidRootPart.CFrame = CFrame.new(teleportPoint + Vector3.new(0,3,0))
-	end
+    if teleportPoint then
+        character.HumanoidRootPart.CFrame = CFrame.new(teleportPoint + Vector3.new(0,3,0))
+    end
 end)
 
 removePointBtn.MouseButton1Click:Connect(function()
-	teleportPoint = nil
-	if marker then
-		marker:Destroy()
-		marker = nil
-	end
+    teleportPoint = nil
+    if marker then
+        marker:Destroy()
+        marker = nil
+    end
 end)
 
 gameSetBtn.MouseButton1Click:Connect(function()
-	settingsPage.Visible = false
-	gamePage.Visible = true
+    settingsPage.Visible = false
+    gamePage.Visible = true
 end)
 
 -- BACK BUTTON SETTINGS
@@ -372,45 +368,45 @@ backBtn.Font = Enum.Font.GothamBold
 backBtn.TextSize = 20
 Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0,10)
 backBtn.MouseButton1Click:Connect(function()
-	settingsPage.Visible = false
-	mainPage.Visible = true
+    settingsPage.Visible = false
+    mainPage.Visible = true
 end)
 
 settingsBtn.MouseButton1Click:Connect(function()
-	settingsPage.Visible = true
-	mainPage.Visible = false
+    settingsPage.Visible = true
+    mainPage.Visible = false
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
-	closeFrame(frame)
-	reopenBtn.Visible = true
+    closeFrame(frame)
+    reopenBtn.Visible = true
 end)
 
 reopenBtn.MouseButton1Click:Connect(function()
-	openFrame(frame)
-	reopenBtn.Visible = false
+    openFrame(frame)
+    reopenBtn.Visible = false
 end)
 
 -- Signature RGB
 local signature = Instance.new("TextLabel", frame)
-signature.Size = UDim2.new(1,0,0,15)        
-signature.Position = UDim2.new(0,0,1,-20)   
+signature.Size = UDim2.new(1,0,0,15)       -- Hauteur plus petite
+signature.Position = UDim2.new(0,0,1,-20)  -- Légèrement remontée du bas
 signature.Text = "Powered by SHADOW"
 signature.Font = Enum.Font.GothamBold
-signature.TextSize = 12                       
+signature.TextSize = 12                     -- Taille du texte réduite
 signature.TextColor3 = Color3.fromRGB(255,0,0)
 signature.BackgroundTransparency = 1
-signature.TextScaled = false                  
+signature.TextScaled = false                -- On utilise TextSize pour contrôler la taille
 signature.TextXAlignment = Enum.TextXAlignment.Center
 
 
 spawn(function()
-	while true do
-		for i=0,1,0.01 do
-			signature.TextColor3 = Color3.fromHSV(i,1,1)
-			wait(0.02)
-		end
-	end
+    while true do
+        for i=0,1,0.01 do
+            signature.TextColor3 = Color3.fromHSV(i,1,1)
+            wait(0.02)
+        end
+    end
 end)
 
 -- =========================
@@ -425,92 +421,92 @@ local buttonY = 0.1
 local spacing = 0.18
 
 local function createButton(name,toggleVar,callback)
-	local btn = Instance.new("TextButton", mainPage)
-	btn.Size = UDim2.new(0,280,0,35)
-	btn.Position = UDim2.new(0.5,-140,buttonY,0)
-	btn.Text = name..": OFF"
-	btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-	btn.TextColor3 = Color3.fromRGB(255,255,255)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 20
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+    local btn = Instance.new("TextButton", mainPage)
+    btn.Size = UDim2.new(0,280,0,35)
+    btn.Position = UDim2.new(0.5,-140,buttonY,0)
+    btn.Text = name..": OFF"
+    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 20
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
 
-	btn.MouseButton1Click:Connect(function()
-		_G[toggleVar] = not _G[toggleVar]
-		btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
-		callback(_G[toggleVar])
-	end)
+    btn.MouseButton1Click:Connect(function()
+        _G[toggleVar] = not _G[toggleVar]
+        btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
+        callback(_G[toggleVar])
+    end)
 
-	buttonY = buttonY + spacing
+    buttonY = buttonY + spacing
 end
 
 -- =========================
 -- FONCTIONS CHEATS
 -- =========================
 createButton("Vol","flyEnabled",function(state)
-	local hrp = character:FindFirstChild("HumanoidRootPart")
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if not hrp or not humanoid then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not hrp or not humanoid then return end
 
-	if state then
-		humanoid.PlatformStand = true
+    if state then
+        humanoid.PlatformStand = true
 
-		local bv = Instance.new("BodyVelocity", hrp)
-		bv.Name = "FlyVelocity"
-		bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-		bv.Velocity = Vector3.zero
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Name = "FlyVelocity"
+        bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+        bv.Velocity = Vector3.zero
 
-		local bg = Instance.new("BodyGyro", hrp)
-		bg.Name = "FlyGyro"
-		bg.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-		bg.P = 1e4
-		bg.CFrame = hrp.CFrame
+        local bg = Instance.new("BodyGyro", hrp)
+        bg.Name = "FlyGyro"
+        bg.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+        bg.P = 1e4
+        bg.CFrame = hrp.CFrame
 
-		local speed = 60
-		local smoothing = 0.2  
+        local speed = 60
+        local smoothing = 0.2  -- plus c’est petit, plus c’est réactif
 
-		local conn
-		conn = RS.Heartbeat:Connect(function(dt)
-			if not _G.flyEnabled then
-				conn:Disconnect()
-				bv:Destroy()
-				bg:Destroy()
-				humanoid.PlatformStand = false
-				return
-			end
+        local conn
+        conn = RS.Heartbeat:Connect(function(dt)
+            if not _G.flyEnabled then
+                conn:Disconnect()
+                bv:Destroy()
+                bg:Destroy()
+                humanoid.PlatformStand = false
+                return
+            end
 
-			local moveDir = humanoid.MoveDirection
-			local camCF = camera.CFrame  
+            local moveDir = humanoid.MoveDirection
+            local camCF = camera.CFrame  -- Récupérer la position de la caméra
 
-			local targetVelocity
-			local velocityY = 0  
+            local targetVelocity
+            local velocityY = 0  -- Valeur de Y initiale à 0 (pas de montée ou descente automatique)
 
-			if moveDir.Magnitude > 0 then
-				
-				local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit  
-				targetVelocity = moveDirection * speed
+            if moveDir.Magnitude > 0 then
+                -- On utilise les directions locales pour bouger, pas affecté par la caméra
+                local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit  -- Mouvement horizontal dans l'espace local
+                targetVelocity = moveDirection * speed
 
-				
-				velocityY = camCF.LookVector.Y * speed
-			else
-				targetVelocity = Vector3.new(0, 0, 0)
-			end
+                -- Si on avance avec le joystick, la vitesse verticale suit l'inclinaison de la caméra
+                velocityY = camCF.LookVector.Y * speed
+            else
+                targetVelocity = Vector3.new(0, 0, 0)
+            end
 
-			
-			bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
-			bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
+            -- Lissage de la vitesse pour un arrêt progressif
+            bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
+            bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
 
-			
-			bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
-		end)
-	else
-		local oldBV = hrp:FindFirstChild("FlyVelocity")
-		if oldBV then oldBV:Destroy() end
-		local oldBG = hrp:FindFirstChild("FlyGyro")
-		if oldBG then oldBG:Destroy() end
-		humanoid.PlatformStand = false
-		humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-	end
+            -- Garder l'orientation du personnage selon la caméra
+            bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
+        end)
+    else
+        local oldBV = hrp:FindFirstChild("FlyVelocity")
+        if oldBV then oldBV:Destroy() end
+        local oldBG = hrp:FindFirstChild("FlyGyro")
+        if oldBG then oldBG:Destroy() end
+        humanoid.PlatformStand = false
+        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
 end)
 
 
@@ -518,37 +514,37 @@ end)
 
 -- Speed
 createButton("Vitesse","speedEnabled",function(state)
-	character.Humanoid.WalkSpeed = state and 100 or 16
+    character.Humanoid.WalkSpeed = state and 100 or 16
 end)
 
 -- Jump
 createButton("Saut","jumpEnabled",function(state)
-	character.Humanoid.JumpPower = state and 150 or 50
+    character.Humanoid.JumpPower = state and 150 or 50
 end)
 
 -- Noclip
 createButton("Noclip","noclip",function(state)
-	RS.Stepped:Connect(function()
-		if _G.noclip then
-			for _,part in pairs(character:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.CanCollide = false
-				end
-			end
-		end
-	end)
+    RS.Stepped:Connect(function()
+        if _G.noclip then
+            for _,part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
 end)
 
 -- Animation rouge ↔ bleu titre et bouton SHADOW
 local function animateColor(textLabel)
-	spawn(function()
-		while true do
-			for i=0,1,0.01 do
-				textLabel.TextColor3 = Color3.fromHSV(i,1,1)
-				wait(0.03)
-			end
-		end
-	end)
+    spawn(function()
+        while true do
+            for i=0,1,0.01 do
+                textLabel.TextColor3 = Color3.fromHSV(i,1,1)
+                wait(0.03)
+            end
+        end
+    end)
 end
 
 animateColor(title)
@@ -558,17 +554,17 @@ animateColor(reopenBtn)
 -- MOT DE PASSE VALIDATION
 -- =========================
 submitBtn.MouseButton1Click:Connect(function()
-	if passBox.Text == "95741" then
-		loadingBarFrame.Visible = true
-		for i=1,100 do
-			loadingBar.Size = UDim2.new(i/100,0,1,0)
-			loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
-			wait(0.03)
-		end
-		passPage.Visible = false -- Changement ici : on cache au lieu de détruire
-		openFrame(frame)
-	else
-		passBox.Text = ""
-		passBox.PlaceholderText = "Mot de passe incorrect"
-	end
+    if passBox.Text == "95741" then
+        loadingBarFrame.Visible = true
+        for i=1,100 do
+            loadingBar.Size = UDim2.new(i/100,0,1,0)
+            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
+            wait(0.03)
+        end
+        passPage:Destroy()
+        openFrame(frame)
+    else
+        passBox.Text = ""
+        passBox.PlaceholderText = "Mot de passe incorrect"
+    end
 end)
