@@ -178,7 +178,7 @@ infoPage.Visible = false
 
 local backInfoBtn = Instance.new("TextButton", infoPage)
 backInfoBtn.Size = UDim2.new(0,120,0,35)
-backInfoBtn.Position = UDim2.new(0.5,-60,1,-70) -- Modifié ici
+backInfoBtn.Position = UDim2.new(0.5,-60,0,50)
 backInfoBtn.Text = "← Retour"
 backInfoBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 backInfoBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -280,7 +280,7 @@ gamePage.Visible = false
 
 local backGameBtn = Instance.new("TextButton", gamePage)
 backGameBtn.Size = UDim2.new(0,120,0,35)
-backGameBtn.Position = UDim2.new(0.5,-60,1,-70) -- Modifié ici
+backGameBtn.Position = UDim2.new(0.5,-60,0,50)
 backGameBtn.Text = "← Retour"
 backGameBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 backGameBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -360,7 +360,7 @@ end)
 -- BACK BUTTON SETTINGS
 local backBtn = Instance.new("TextButton", settingsPage)
 backBtn.Size = UDim2.new(0,120,0,35)
-backBtn.Position = UDim2.new(0.5,-60,1,-70) -- Modifié ici
+backBtn.Position = UDim2.new(0.5,-60,0,50)
 backBtn.Text = "← Retour"
 backBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
 backBtn.TextColor3 = Color3.fromRGB(255,255,255)
