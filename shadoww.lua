@@ -52,7 +52,7 @@ submitBtn.Size = UDim2.new(0,140,0,40)
 submitBtn.Position = UDim2.new(0.5,-70,0.7,0)
 submitBtn.Text = "Valider"
 submitBtn.TextColor3 = Color3.fromRGB(255,255,255)
-submitBtn.BackgroundColor3 = Color3.fromRGB(255,50,50) -- Couleur de base plus vive
+submitBtn.BackgroundColor3 = Color3.fromRGB(255,50,50)
 submitBtn.Font = Enum.Font.GothamBold
 submitBtn.TextSize = 22
 Instance.new("UICorner", submitBtn).CornerRadius = UDim.new(0,12)
@@ -381,12 +381,11 @@ backArrowBtn.MouseButton1Click:Connect(function()
     settingsBtn.Visible = true
     backArrowBtn.Visible = false
     settingsPage.Visible = false
-    infoPage.Visible = false -- S'assurer de cacher les sous-pages aussi
+    infoPage.Visible = false
     gamePage.Visible = false
     mainPage.Visible = true
 end)
 
--- Quand on clique sur les sous-boutons des paramètres, on change de page mais le bouton retour reste visible
 infoBtn.MouseButton1Click:Connect(function()
     settingsPage.Visible = false
     infoPage.Visible = true
@@ -408,14 +407,14 @@ end)
 
 -- Signature RGB
 local signature = Instance.new("TextLabel", frame)
-signature.Size = UDim2.new(1,0,0,15)       -- Hauteur plus petite
-signature.Position = UDim2.new(0,0,1,-20)  -- Légèrement remontée du bas
+signature.Size = UDim2.new(1,0,0,15)
+signature.Position = UDim2.new(0,0,1,-20)
 signature.Text = "Powered by SHADOW"
 signature.Font = Enum.Font.GothamBold
-signature.TextSize = 12                     -- Taille du texte réduite
+signature.TextSize = 12
 signature.TextColor3 = Color3.fromRGB(255,0,0)
 signature.BackgroundTransparency = 1
-signature.TextScaled = false                -- On utilise TextSize pour contrôler la taille
+signature.TextScaled = false
 signature.TextXAlignment = Enum.TextXAlignment.Center
 
 
@@ -586,9 +585,6 @@ createButton("Vol","flyEnabled",function(state)
     end
 end)
 
-
-
-
 -- Speed
 createButton("Vitesse","speedEnabled",function(state)
     character.Humanoid.WalkSpeed = state and 100 or 16
@@ -614,25 +610,28 @@ end)
 
 -- LOGIQUE DU KILL AURA
 RS.Heartbeat:Connect(function()
-    if _G.killAuraEnabled then
-        -- Vérifie si le joueur a une arme équipée
-        local hasWeapon = false
-        if character:FindFirstChildOfClass("Tool") then
-            hasWeapon = true
+    if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
+        local hasAxe = false
+        -- On vérifie si le joueur a une hache équipée
+        if character:FindFirstChildOfClass("Tool") and character:FindFirstChildOfClass("Tool").Name:lower():find("hache") then
+            hasAxe = true
         end
 
-        -- Si le joueur a une arme, on cherche les ennemis
-        if hasWeapon then
-            for _, targetPlayer in pairs(game.Players:GetPlayers()) do
-                -- On s'assure de ne pas se cibler soi-même
-                if targetPlayer.Name ~= player.Name then
-                    local targetChar = targetPlayer.Character
-                    if targetChar and targetChar:FindFirstChild("Humanoid") and targetChar:FindFirstChild("HumanoidRootPart") then
-                        -- Vérifie la distance
-                        if (character.HumanoidRootPart.Position - targetChar.HumanoidRootPart.Position).Magnitude < 500 then
-                            -- Tente de réduire la vie de l'ennemi. ATTENTION : ceci ne fonctionne pas dans tous les jeux
-                            -- car la plupart ont des scripts de sécurité côté serveur pour empêcher ce genre de chose.
-                            targetChar.Humanoid.Health = 0
+        if hasAxe then
+            local myPosition = character.HumanoidRootPart.Position
+            
+            -- On parcourt tous les objets dans le workspace pour trouver les cibles
+            for _, target in pairs(workspace:GetChildren()) do
+                -- On vérifie que c'est une créature (modèle avec un Humanoid)
+                local humanoid = target:FindFirstChildOfClass("Humanoid")
+                local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
+
+                if humanoid and rootPart and target.Name ~= player.Name then
+                    -- On vérifie si la cible est à moins de 500 mètres
+                    if (myPosition - rootPart.Position).Magnitude <= 500 then
+                        -- Et qu'elle n'est pas déjà morte
+                        if humanoid.Health > 0 then
+                            humanoid.Health = 0
                         end
                     end
                 end
@@ -666,7 +665,7 @@ submitBtn.MouseButton1Click:Connect(function()
         for i=1,100 do
             loadingBar.Size = UDim2.new(i/100,0,1,0)
             loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
-            wait(0.01) -- Vitesse d'animation plus fluide
+            wait(0.01)
         end
         passPage:Destroy()
         openFrame(frame)
