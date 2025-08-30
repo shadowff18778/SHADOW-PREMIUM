@@ -1,3 +1,5 @@
+-- Ceci est la version corrigée du script. Copie tout ce code et remplace le contenu de "shadow.lua" sur ton GitHub avec.
+
 game.StarterGui:SetCore("SendNotification", {
 	Title = "😈SHADOW HUB😈",
 	Text = "chargement... 😈",
