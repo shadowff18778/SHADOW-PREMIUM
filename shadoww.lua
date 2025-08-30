@@ -13,21 +13,23 @@ local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "ShadowHub"
 
 -- =========================
--- PAGE MOT DE PASSE
+-- PAGE MOT DE PASSE (Améliorée)
 -- =========================
 local passPage = Instance.new("Frame", gui)
 passPage.Size = UDim2.new(0, 380, 0, 250)
 passPage.Position = UDim2.new(0.5,0,0.5,0)
 passPage.AnchorPoint = Vector2.new(0.5,0.5)
-passPage.BackgroundColor3 = Color3.fromRGB(25,25,25)
+passPage.BackgroundColor3 = Color3.fromRGB(15,15,15)
 Instance.new("UICorner", passPage).CornerRadius = UDim.new(0,15)
+Instance.new("UIStroke", passPage).Color = Color3.fromRGB(255, 50, 50)
+Instance.new("UIStroke", passPage).Thickness = 2
 passPage.ClipsDescendants = true
 passPage.Visible = true
 
 local passTitle = Instance.new("TextLabel", passPage)
 passTitle.Size = UDim2.new(1,-40,0,50)
 passTitle.Position = UDim2.new(0,20,0,20)
-passTitle.Text = "Mot de passe requis"
+passTitle.Text = "ACCÈS SÉCURISÉ"
 passTitle.TextColor3 = Color3.fromRGB(255,50,50)
 passTitle.Font = Enum.Font.GothamBold
 passTitle.TextSize = 26
@@ -36,28 +38,40 @@ passTitle.BackgroundTransparency = 1
 local passBox = Instance.new("TextBox", passPage)
 passBox.Size = UDim2.new(0,250,0,40)
 passBox.Position = UDim2.new(0.5,-125,0.5,-20)
-passBox.PlaceholderText = "Entre le mot de passe"
+passBox.PlaceholderText = "Entrez le mot de passe"
 passBox.TextColor3 = Color3.fromRGB(255,255,255)
 passBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
 passBox.Font = Enum.Font.Gotham
 passBox.TextSize = 20
 Instance.new("UICorner", passBox).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", passBox).Color = Color3.fromRGB(50,50,50)
+Instance.new("UIStroke", passBox).Thickness = 2
 
 local submitBtn = Instance.new("TextButton", passPage)
 submitBtn.Size = UDim2.new(0,140,0,40)
 submitBtn.Position = UDim2.new(0.5,-70,0.7,0)
 submitBtn.Text = "Valider"
 submitBtn.TextColor3 = Color3.fromRGB(255,255,255)
-submitBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+submitBtn.BackgroundColor3 = Color3.fromRGB(255,50,50) -- Couleur de base plus vive
 submitBtn.Font = Enum.Font.GothamBold
 submitBtn.TextSize = 22
 Instance.new("UICorner", submitBtn).CornerRadius = UDim.new(0,12)
 
--- Loading stylé
+-- Loading bar stylée
+local loadingLabel = Instance.new("TextLabel", passPage)
+loadingLabel.Size = UDim2.new(0, 300, 0, 20)
+loadingLabel.Position = UDim2.new(0.5, -150, 0.8, 0)
+loadingLabel.Text = "Chargement..."
+loadingLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+loadingLabel.Font = Enum.Font.Gotham
+loadingLabel.TextSize = 18
+loadingLabel.BackgroundTransparency = 1
+loadingLabel.Visible = false
+
 local loadingBarFrame = Instance.new("Frame", passPage)
-loadingBarFrame.Size = UDim2.new(0,300,0,20)
+loadingBarFrame.Size = UDim2.new(0,300,0,10)
 loadingBarFrame.Position = UDim2.new(0.5,-150,0.85,0)
-loadingBarFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+loadingBarFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Instance.new("UICorner", loadingBarFrame).CornerRadius = UDim.new(0,10)
 loadingBarFrame.Visible = false
 
@@ -546,11 +560,12 @@ animateColor(reopenBtn)
 -- =========================
 submitBtn.MouseButton1Click:Connect(function()
     if passBox.Text == "95741" then
+        loadingLabel.Visible = true
         loadingBarFrame.Visible = true
         for i=1,100 do
             loadingBar.Size = UDim2.new(i/100,0,1,0)
             loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
-            wait(0.03)
+            wait(0.01) -- Vitesse d'animation plus fluide
         end
         passPage:Destroy()
         openFrame(frame)
