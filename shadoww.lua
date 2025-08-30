@@ -254,6 +254,7 @@ local function createPlayerButtons()
             playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
             playerBtn.Font = Enum.Font.Gotham
             playerBtn.TextSize = 18
+            playerBtn.Text = "" -- Important: on vide le texte pour qu'il n'y ait pas de texte "TextButton"
             Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
             
             -- Conteneur pour le texte et l'image pour le bon alignement
@@ -406,6 +407,31 @@ gameSetBtn.MouseButton1Click:Connect(function()
     gamePage.Visible = true
 end)
 
+-- NOUVELLE PAGE HACKS
+local hackBtn = Instance.new("TextButton", settingsPage)
+hackBtn.Size = UDim2.new(0,180,0,35)
+hackBtn.Position = UDim2.new(0.5,-90,0.5,0)
+hackBtn.Text = "Hacks"
+hackBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+hackBtn.TextColor3 = Color3.fromRGB(255,255,255)
+hackBtn.Font = Enum.Font.GothamBold
+hackBtn.TextSize = 20
+Instance.new("UICorner", hackBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", hackBtn).Color = Color3.fromRGB(255,50,50)
+
+local hackPage = Instance.new("Frame", frame)
+hackPage.Size = UDim2.new(1,0,1,-45)
+hackPage.Position = UDim2.new(0,0,0,45)
+hackPage.BackgroundTransparency = 1
+local hackGradient = Instance.new("UIGradient", hackPage)
+hackGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+hackPage.Visible = false
+
+hackBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    hackPage.Visible = true
+end)
+
 -- LOGIQUE D'AFFICHAGE DES BOUTONS ET DES PAGES
 settingsBtn.MouseButton1Click:Connect(function()
     settingsBtn.Visible = false
@@ -420,6 +446,7 @@ backArrowBtn.MouseButton1Click:Connect(function()
     settingsPage.Visible = false
     infoPage.Visible = false
     gamePage.Visible = false
+    hackPage.Visible = false
     mainPage.Visible = true
 end)
 
@@ -472,6 +499,8 @@ _G.speedEnabled = false
 _G.jumpEnabled = false
 _G.noclip = false
 _G.killAuraEnabled = false
+_G.nameViewEnabled = false
+_G.trackerEnabled = false
 
 local buttonY = 0.1
 local spacing = 0.18
@@ -487,8 +516,8 @@ local function animateButtonColor(btn, startColor, endColor, duration)
     btn.BackgroundColor3 = endColor
 end
 
-local function createButton(name,toggleVar,callback)
-    local btn = Instance.new("TextButton", mainPage)
+local function createButton(name,parent,toggleVar,callback)
+    local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(0,280,0,35)
     btn.Position = UDim2.new(0.5,-140,buttonY,0)
     btn.Text = name..": OFF"
@@ -519,48 +548,14 @@ local function createButton(name,toggleVar,callback)
             btnStroke.Color = originalStrokeColor
         end
     end)
-
-    buttonY = buttonY + spacing
+    return btn
 end
 
 -- =========================
--- BOUTON KILL AURA DANS LES PARAMÈTRES
+-- FONCTIONS CHEATS (MISE À JOUR)
 -- =========================
-local killAuraBtn = Instance.new("TextButton", settingsPage)
-killAuraBtn.Size = UDim2.new(0,180,0,35)
-killAuraBtn.Position = UDim2.new(0.5,-90,0.5,0)
-killAuraBtn.Text = "Kill Aura: OFF"
-local originalColor = Color3.fromRGB(30,30,30)
-local onColor = Color3.fromRGB(0, 180, 0)
-local originalStrokeColor = Color3.fromRGB(255,50,50)
-local onStrokeColor = Color3.fromRGB(0, 255, 0)
-
-killAuraBtn.BackgroundColor3 = originalColor
-killAuraBtn.TextColor3 = Color3.fromRGB(255,255,255)
-killAuraBtn.Font = Enum.Font.GothamBold
-killAuraBtn.TextSize = 20
-Instance.new("UICorner", killAuraBtn).CornerRadius = UDim.new(0,10)
-local btnStroke = Instance.new("UIStroke", killAuraBtn)
-btnStroke.Color = originalStrokeColor
-btnStroke.Thickness = 2
-
-killAuraBtn.MouseButton1Click:Connect(function()
-    _G.killAuraEnabled = not _G.killAuraEnabled
-    killAuraBtn.Text = "Kill Aura: "..(_G.killAuraEnabled and "ON" or "OFF")
-    
-    if _G.killAuraEnabled then
-        animateButtonColor(killAuraBtn, originalColor, onColor, 0.2)
-        btnStroke.Color = onStrokeColor
-    else
-        killAuraBtn.BackgroundColor3 = originalColor
-        btnStroke.Color = originalStrokeColor
-    end
-end)
-
--- =========================
--- FONCTIONS CHEATS
--- =========================
-createButton("Vol","flyEnabled",function(state)
+-- Ajout des boutons dans la page principale
+createButton("Vol", mainPage, "flyEnabled", function(state)
     local hrp = character:FindFirstChild("HumanoidRootPart")
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if not hrp or not humanoid then return end
@@ -577,7 +572,7 @@ createButton("Vol","flyEnabled",function(state)
         bg.Name = "FlyGyro"
         bg.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
         bg.P = 1e4
-        bg.CFrame = hrp.CFrame
+        bg.CFrame = hrp.Cframe
 
         local speed = 60
         local smoothing = 0.2
@@ -622,18 +617,15 @@ createButton("Vol","flyEnabled",function(state)
     end
 end)
 
--- Speed
-createButton("Vitesse","speedEnabled",function(state)
+createButton("Vitesse", mainPage, "speedEnabled", function(state)
     character.Humanoid.WalkSpeed = state and 100 or 16
 end)
 
--- Jump
-createButton("Saut","jumpEnabled",function(state)
+createButton("Saut", mainPage, "jumpEnabled", function(state)
     character.Humanoid.JumpPower = state and 150 or 50
 end)
 
--- Noclip
-createButton("Noclip","noclip",function(state)
+createButton("Noclip", mainPage, "noclip", function(state)
     RS.Stepped:Connect(function()
         if _G.noclip then
             for _,part in pairs(character:GetDescendants()) do
@@ -645,37 +637,125 @@ createButton("Noclip","noclip",function(state)
     end)
 end)
 
--- LOGIQUE DU KILL AURA (MISE À JOUR)
+-- Boutons pour la nouvelle page "Hacks"
+local buttonYHack = 0.1
+local function createHackButton(name, toggleVar, callback)
+    local btn = createButton(name, hackPage, toggleVar, callback)
+    btn.Position = UDim2.new(0.5,-140,buttonYHack,0)
+    buttonYHack = buttonYHack + spacing
+end
+
+-- Kill Aura
+createHackButton("Kill Aura", "killAuraEnabled", function(state) end) -- Logique dans le Heartbeat
+
+-- Name View
+createHackButton("Name View", "nameViewEnabled", function(state) end) -- Logique dans le Heartbeat
+
+-- Tracker
+local trackerFrame = Instance.new("Frame", gui)
+trackerFrame.Size = UDim2.new(0,180,0,40)
+trackerFrame.Position = UDim2.new(0,10,1,-50)
+trackerFrame.BackgroundColor3 = Color3.fromRGB(15,15,15)
+trackerFrame.Visible = false
+Instance.new("UICorner", trackerFrame).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", trackerFrame).Color = Color3.fromRGB(255,50,50)
+
+local trackerLabel = Instance.new("TextLabel", trackerFrame)
+trackerLabel.Size = UDim2.new(1,-20,1,-10)
+trackerLabel.Position = UDim2.new(0,10,0,5)
+trackerLabel.Text = "Distance: N/A"
+trackerLabel.TextColor3 = Color3.fromRGB(255,255,255)
+trackerLabel.Font = Enum.Font.GothamBold
+trackerLabel.TextSize = 18
+trackerLabel.BackgroundTransparency = 1
+
+createHackButton("Tracker", "trackerEnabled", function(state)
+    trackerFrame.Visible = state
+end)
+
+-- LOGIQUE GLOBALE DANS UNE BOUCLE
+local nameTags = {}
 RS.Heartbeat:Connect(function()
+    local myPosition = character.HumanoidRootPart.Position
+
+    -- LOGIQUE DU KILL AURA
     if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
         local hasAxe = false
         local tool = character:FindFirstChildOfClass("Tool")
-        if tool and tool.Name:lower():find("hache") then
+        if tool and (tool.Name:lower():find("hache") or tool.Name:lower():find("axe")) then
             hasAxe = true
         end
         
         if hasAxe then
-            local myPosition = character.HumanoidRootPart.Position
-            
-            -- On parcourt tous les modèles dans le jeu (meilleure performance)
             for _, target in pairs(workspace:GetChildren()) do
-                -- On vérifie que c'est une créature (modèle avec un Humanoid)
                 local humanoid = target:FindFirstChildOfClass("Humanoid")
                 local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
                 
-                -- On vérifie que la cible est une créature, qu'elle n'est pas le joueur et qu'elle a une partie du corps
                 if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name then
-                    -- On vérifie si la cible est à moins de 500 mètres
                     if (myPosition - rootPart.Position).Magnitude <= 500 then
-                        -- Pour débugger, on peut ajouter une ligne pour voir ce qui est tué
-                        print("Killing target:", target.Name)
                         humanoid.Health = 0
                     end
                 end
             end
         end
     end
+
+    -- LOGIQUE DU NAME VIEW (ESP)
+    if _G.nameViewEnabled then
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                if not nameTags[plr.Name] then
+                    local nameTag = Instance.new("BillboardGui")
+                    nameTag.Size = UDim2.new(0, 150, 0, 20)
+                    nameTag.Adornee = plr.Character:FindFirstChild("Head") or plr.Character.HumanoidRootPart
+                    nameTag.AlwaysOnTop = true
+                    nameTag.Parent = plr.Character
+
+                    local nameLabel = Instance.new("TextLabel")
+                    nameLabel.Size = UDim2.new(1,0,1,0)
+                    nameLabel.Text = plr.Name
+                    nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                    nameLabel.Font = Enum.Font.GothamBold
+                    nameLabel.TextSize = 18
+                    nameLabel.BackgroundTransparency = 1
+                    nameLabel.Parent = nameTag
+                    nameTags[plr.Name] = nameTag
+                end
+            elseif nameTags[plr.Name] then
+                nameTags[plr.Name]:Destroy()
+                nameTags[plr.Name] = nil
+            end
+        end
+    else
+        for _, tag in pairs(nameTags) do
+            tag:Destroy()
+        end
+        nameTags = {}
+    end
+
+    -- LOGIQUE DU TRACKER
+    if _G.trackerEnabled then
+        local closestPlayer
+        local closestDistance = math.huge
+
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = (myPosition - plr.Character.HumanoidRootPart.Position).Magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = plr
+                end
+            end
+        end
+
+        if closestPlayer then
+            trackerLabel.Text = "Distance: "..math.floor(closestDistance).." m"
+        else
+            trackerLabel.Text = "Distance: N/A"
+        end
+    end
 end)
+
 
 -- Animation rouge ↔ bleu titre et bouton SHADOW
 local function animateColor(textLabel)
