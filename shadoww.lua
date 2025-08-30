@@ -87,11 +87,15 @@ local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0,400,0,300)
 frame.Position = UDim2.new(0.5,0,0.5,0)
 frame.AnchorPoint = Vector2.new(0.5,0.5)
-frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20) -- Couleur de fond un peu plus claire
 frame.BorderSizePixel = 0
 frame.Visible = false
 frame.ClipsDescendants = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,15)
+-- Stroke stylée
+local frameStroke = Instance.new("UIStroke", frame)
+frameStroke.Color = Color3.fromRGB(255, 50, 50)
+frameStroke.Thickness = 2
 
 -- Animation ouverture
 local function openFrame(f)
@@ -171,16 +175,20 @@ reopenBtn.TextSize = 20
 reopenBtn.Visible = false
 Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(0,10)
 
--- PAGES
+-- PAGES avec gradient
 local mainPage = Instance.new("Frame", frame)
 mainPage.Size = UDim2.new(1,0,1,-45)
 mainPage.Position = UDim2.new(0,0,0,45)
 mainPage.BackgroundTransparency = 1
+local mainGradient = Instance.new("UIGradient", mainPage)
+mainGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 
 local settingsPage = Instance.new("Frame", frame)
 settingsPage.Size = UDim2.new(1,0,1,-45)
 settingsPage.Position = UDim2.new(0,0,0,45)
 settingsPage.BackgroundTransparency = 1
+local settingsGradient = Instance.new("UIGradient", settingsPage)
+settingsGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 settingsPage.Visible = false
 
 -- =========================
@@ -190,16 +198,19 @@ local infoBtn = Instance.new("TextButton", settingsPage)
 infoBtn.Size = UDim2.new(0,180,0,35)
 infoBtn.Position = UDim2.new(0.5,-90,0.2,0)
 infoBtn.Text = "Infos Joueurs"
-infoBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+infoBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
 infoBtn.TextColor3 = Color3.fromRGB(255,255,255)
 infoBtn.Font = Enum.Font.GothamBold
 infoBtn.TextSize = 20
 Instance.new("UICorner", infoBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", infoBtn).Color = Color3.fromRGB(255,50,50)
 
 local infoPage = Instance.new("Frame", frame)
 infoPage.Size = UDim2.new(1,0,1,-45)
 infoPage.Position = UDim2.new(0,0,0,45)
 infoPage.BackgroundTransparency = 1
+local infoGradient = Instance.new("UIGradient", infoPage)
+infoGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 infoPage.Visible = false
 
 -- ScrollingFrame pour la liste des joueurs
@@ -240,7 +251,7 @@ local function createPlayerButtons()
             local playerBtn = Instance.new("TextButton", playerList)
             playerBtn.Size = UDim2.new(1, -10, 0, 30)
             playerBtn.Text = plr.Name
-            playerBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+            playerBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
             playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
             playerBtn.Font = Enum.Font.Gotham
             playerBtn.TextSize = 18
@@ -278,16 +289,19 @@ local gameSetBtn = Instance.new("TextButton", settingsPage)
 gameSetBtn.Size = UDim2.new(0,180,0,35)
 gameSetBtn.Position = UDim2.new(0.5,-90,0.35,0)
 gameSetBtn.Text = "Game Set"
-gameSetBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+gameSetBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
 gameSetBtn.TextColor3 = Color3.fromRGB(255,255,255)
 gameSetBtn.Font = Enum.Font.GothamBold
 gameSetBtn.TextSize = 20
 Instance.new("UICorner", gameSetBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", gameSetBtn).Color = Color3.fromRGB(255,50,50)
 
 local gamePage = Instance.new("Frame", frame)
 gamePage.Size = UDim2.new(1,0,1,-45)
 gamePage.Position = UDim2.new(0,0,0,45)
 gamePage.BackgroundTransparency = 1
+local gameGradient = Instance.new("UIGradient", gamePage)
+gameGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 gamePage.Visible = false
 
 -- Teleport buttons
@@ -430,11 +444,12 @@ local function createButton(name,toggleVar,callback)
     btn.Size = UDim2.new(0,280,0,35)
     btn.Position = UDim2.new(0.5,-140,buttonY,0)
     btn.Text = name..": OFF"
-    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
     btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 20
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+    Instance.new("UIStroke", btn).Color = Color3.fromRGB(255,50,50)
 
     btn.MouseButton1Click:Connect(function()
         _G[toggleVar] = not _G[toggleVar]
