@@ -18,24 +18,9 @@ frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
-frame.Visible = false
+frame.Visible = true
 frame.Parent = gui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
--- Animation ouverture
-local function openFrame()
-    frame.Size = UDim2.new(0,0,0,0)
-    frame.Visible = true
-    TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        {Size = UDim2.new(0,300,0,350)}):Play()
-end
-
-local function closeFrame()
-    TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-        {Size = UDim2.new(0,0,0,0)}):Play()
-    wait(0.2)
-    frame.Visible = false
-end
 
 -- Bouton discret pour réouvrir
 local reopenBtn = Instance.new("TextButton")
@@ -49,6 +34,24 @@ reopenBtn.TextSize = 14
 reopenBtn.Parent = gui
 Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(0, 8)
 reopenBtn.Visible = false
+
+-- Animation ouverture/fermeture
+local function openFrame()
+    frame.Visible = true
+    frame.Size = UDim2.new(0,0,0,0)
+    TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0,300,0,350)}):Play()
+end
+
+local function closeFrame()
+    TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+        {Size = UDim2.new(0,0,0,0)}):Play()
+    task.delay(0.2, function()
+        frame.Visible = false
+        reopenBtn.Visible = true
+    end)
+end
+
 reopenBtn.MouseButton1Click:Connect(function()
     openFrame()
     reopenBtn.Visible = false
@@ -65,10 +68,7 @@ closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 18
 closeBtn.Parent = frame
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
-closeBtn.MouseButton1Click:Connect(function()
-    closeFrame()
-    reopenBtn.Visible = true
-end)
+closeBtn.MouseButton1Click:Connect(closeFrame)
 
 -- Bouton menu (≡)
 local menuBtn = Instance.new("TextButton")
@@ -90,29 +90,6 @@ menuFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 menuFrame.Visible = false
 menuFrame.Parent = frame
 Instance.new("UICorner", menuFrame).CornerRadius = UDim.new(0, 8)
-
-local function createMenuButton(name, pageIndex)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,0,0,35)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 16
-    btn.Parent = menuFrame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-
-    btn.MouseButton1Click:Connect(function()
-        for i, pg in pairs(pages) do
-            pg.Visible = (i == pageIndex)
-        end
-        menuFrame.Visible = false
-    end)
-end
-
-menuBtn.MouseButton1Click:Connect(function()
-    menuFrame.Visible = not menuFrame.Visible
-end)
 
 -- Titre
 local title = Instance.new("TextLabel")
@@ -280,9 +257,30 @@ createSlider(page2,"Saut du joueur", humanoid.JumpPower,50,1000,function(val)
     humanoid.JumpPower = val
 end)
 
+-- Fonction pour créer les boutons du menu
+local function createMenuButton(name, pageIndex)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1,0,0,35)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.Parent = menuFrame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+    btn.MouseButton1Click:Connect(function()
+        for i, pg in pairs(pages) do
+            pg.Visible = (i == pageIndex)
+        end
+        menuFrame.Visible = false
+    end)
+end
+
 -- Menu navigation
 createMenuButton("Page 1 : Joueurs",1)
 createMenuButton("Page 2 : Stats",2)
 
--- Ouverture initiale
-openFrame()
+menuBtn.MouseButton1Click:Connect(function()
+    menuFrame.Visible = not menuFrame.Visible
+end)
