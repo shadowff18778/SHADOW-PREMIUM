@@ -124,6 +124,18 @@ settingsBtn.Font = Enum.Font.GothamBold
 settingsBtn.TextSize = 22
 Instance.new("UICorner", settingsBtn).CornerRadius = UDim.new(0,8)
 
+-- Nouveau bouton de retour dans le header
+local backArrowBtn = Instance.new("TextButton", header)
+backArrowBtn.Size = UDim2.new(0,35,0,35)
+backArrowBtn.Position = UDim2.new(0,5,0,5)
+backArrowBtn.Text = "←"
+backArrowBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+backArrowBtn.TextColor3 = Color3.fromRGB(255,255,255)
+backArrowBtn.Font = Enum.Font.GothamBold
+backArrowBtn.TextSize = 22
+Instance.new("UICorner", backArrowBtn).CornerRadius = UDim.new(0,8)
+backArrowBtn.Visible = false -- Caché par défaut
+
 local closeBtn = Instance.new("TextButton", header)
 closeBtn.Size = UDim2.new(0,35,0,35)
 closeBtn.Position = UDim2.new(1,-40,0,5)
@@ -175,20 +187,6 @@ infoPage.Size = UDim2.new(1,0,1,-45)
 infoPage.Position = UDim2.new(0,0,0,45)
 infoPage.BackgroundTransparency = 1
 infoPage.Visible = false
-
-local backInfoBtn = Instance.new("TextButton", infoPage)
-backInfoBtn.Size = UDim2.new(0,120,0,35)
-backInfoBtn.Position = UDim2.new(0.5,-60,0,15) -- Nouveau positionnement
-backInfoBtn.Text = "← Retour"
-backInfoBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-backInfoBtn.TextColor3 = Color3.fromRGB(255,255,255)
-backInfoBtn.Font = Enum.Font.GothamBold
-backInfoBtn.TextSize = 20
-Instance.new("UICorner", backInfoBtn).CornerRadius = UDim.new(0,10)
-backInfoBtn.MouseButton1Click:Connect(function()
-    infoPage.Visible = false
-    settingsPage.Visible = true
-end)
 
 -- ScrollingFrame pour la liste des joueurs
 local playerList = Instance.new("ScrollingFrame", infoPage)
@@ -278,20 +276,6 @@ gamePage.Position = UDim2.new(0,0,0,45)
 gamePage.BackgroundTransparency = 1
 gamePage.Visible = false
 
-local backGameBtn = Instance.new("TextButton", gamePage)
-backGameBtn.Size = UDim2.new(0,120,0,35)
-backGameBtn.Position = UDim2.new(0.5,-60,0,15) -- Nouveau positionnement
-backGameBtn.Text = "← Retour"
-backGameBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-backGameBtn.TextColor3 = Color3.fromRGB(255,255,255)
-backGameBtn.Font = Enum.Font.GothamBold
-backGameBtn.TextSize = 20
-Instance.new("UICorner", backGameBtn).CornerRadius = UDim.new(0,10)
-backGameBtn.MouseButton1Click:Connect(function()
-    gamePage.Visible = false
-    settingsPage.Visible = true
-end)
-
 -- Teleport buttons
 local setPointBtn = Instance.new("TextButton", gamePage)
 setPointBtn.Size = UDim2.new(0,120,0,35)
@@ -357,24 +341,31 @@ gameSetBtn.MouseButton1Click:Connect(function()
     gamePage.Visible = true
 end)
 
--- BACK BUTTON SETTINGS
-local backBtn = Instance.new("TextButton", settingsPage)
-backBtn.Size = UDim2.new(0,120,0,35)
-backBtn.Position = UDim2.new(0.5,-60,0,50)
-backBtn.Text = "← Retour"
-backBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-backBtn.TextColor3 = Color3.fromRGB(255,255,255)
-backBtn.Font = Enum.Font.GothamBold
-backBtn.TextSize = 20
-Instance.new("UICorner", backBtn).CornerRadius = UDim.new(0,10)
-backBtn.MouseButton1Click:Connect(function()
+-- LOGIQUE D'AFFICHAGE DES BOUTONS ET DES PAGES
+settingsBtn.MouseButton1Click:Connect(function()
+    settingsBtn.Visible = false
+    backArrowBtn.Visible = true
+    settingsPage.Visible = true
+    mainPage.Visible = false
+end)
+
+backArrowBtn.MouseButton1Click:Connect(function()
+    settingsBtn.Visible = true
+    backArrowBtn.Visible = false
     settingsPage.Visible = false
+    infoPage.Visible = false -- S'assurer de cacher les sous-pages aussi
+    gamePage.Visible = false
     mainPage.Visible = true
 end)
 
-settingsBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = true
-    mainPage.Visible = false
+-- Quand on clique sur les sous-boutons des paramètres, on change de page mais le bouton retour reste visible
+infoBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    infoPage.Visible = true
+end)
+gameSetBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    gamePage.Visible = true
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
