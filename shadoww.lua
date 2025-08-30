@@ -435,6 +435,7 @@ _G.flyEnabled = false
 _G.speedEnabled = false
 _G.jumpEnabled = false
 _G.noclip = false
+_G.killAuraEnabled = false
 
 local buttonY = 0.1
 local spacing = 0.18
@@ -485,6 +486,40 @@ local function createButton(name,toggleVar,callback)
 
     buttonY = buttonY + spacing
 end
+
+-- =========================
+-- BOUTON KILL AURA DANS LES PARAMÈTRES
+-- =========================
+local killAuraBtn = Instance.new("TextButton", settingsPage)
+killAuraBtn.Size = UDim2.new(0,180,0,35)
+killAuraBtn.Position = UDim2.new(0.5,-90,0.5,0)
+killAuraBtn.Text = "Kill Aura: OFF"
+local originalColor = Color3.fromRGB(30,30,30)
+local onColor = Color3.fromRGB(0, 180, 0)
+local originalStrokeColor = Color3.fromRGB(255,50,50)
+local onStrokeColor = Color3.fromRGB(0, 255, 0)
+
+killAuraBtn.BackgroundColor3 = originalColor
+killAuraBtn.TextColor3 = Color3.fromRGB(255,255,255)
+killAuraBtn.Font = Enum.Font.GothamBold
+killAuraBtn.TextSize = 20
+Instance.new("UICorner", killAuraBtn).CornerRadius = UDim.new(0,10)
+local btnStroke = Instance.new("UIStroke", killAuraBtn)
+btnStroke.Color = originalStrokeColor
+btnStroke.Thickness = 2
+
+killAuraBtn.MouseButton1Click:Connect(function()
+    _G.killAuraEnabled = not _G.killAuraEnabled
+    killAuraBtn.Text = "Kill Aura: "..(_G.killAuraEnabled and "ON" or "OFF")
+    
+    if _G.killAuraEnabled then
+        animateButtonColor(killAuraBtn, originalColor, onColor, 0.2)
+        btnStroke.Color = onStrokeColor
+    else
+        killAuraBtn.BackgroundColor3 = originalColor
+        btnStroke.Color = originalStrokeColor
+    end
+end)
 
 -- =========================
 -- FONCTIONS CHEATS
@@ -575,6 +610,35 @@ createButton("Noclip","noclip",function(state)
             end
         end
     end)
+end)
+
+-- LOGIQUE DU KILL AURA
+RS.Heartbeat:Connect(function()
+    if _G.killAuraEnabled then
+        -- Vérifie si le joueur a une arme équipée
+        local hasWeapon = false
+        if character:FindFirstChildOfClass("Tool") then
+            hasWeapon = true
+        end
+
+        -- Si le joueur a une arme, on cherche les ennemis
+        if hasWeapon then
+            for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+                -- On s'assure de ne pas se cibler soi-même
+                if targetPlayer.Name ~= player.Name then
+                    local targetChar = targetPlayer.Character
+                    if targetChar and targetChar:FindFirstChild("Humanoid") and targetChar:FindFirstChild("HumanoidRootPart") then
+                        -- Vérifie la distance
+                        if (character.HumanoidRootPart.Position - targetChar.HumanoidRootPart.Position).Magnitude < 500 then
+                            -- Tente de réduire la vie de l'ennemi. ATTENTION : ceci ne fonctionne pas dans tous les jeux
+                            -- car la plupart ont des scripts de sécurité côté serveur pour empêcher ce genre de chose.
+                            targetChar.Humanoid.Health = 0
+                        end
+                    end
+                end
+            end
+        end
+    end
 end)
 
 -- Animation rouge ↔ bleu titre et bouton SHADOW
