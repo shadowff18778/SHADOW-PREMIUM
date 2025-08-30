@@ -391,14 +391,14 @@ end)
 
 -- Signature RGB
 local signature = Instance.new("TextLabel", frame)
-signature.Size = UDim2.new(1,0,0,15)        -- Hauteur plus petite
-signature.Position = UDim2.new(0,0,1,-20)   -- Légèrement remontée du bas
+signature.Size = UDim2.new(1,0,0,15)        
+signature.Position = UDim2.new(0,0,1,-20)   
 signature.Text = "Powered by SHADOW"
 signature.Font = Enum.Font.GothamBold
-signature.TextSize = 12                       -- Taille du texte réduite
+signature.TextSize = 12                       
 signature.TextColor3 = Color3.fromRGB(255,0,0)
 signature.BackgroundTransparency = 1
-signature.TextScaled = false                  -- On utilise TextSize pour contrôler la taille
+signature.TextScaled = false                  
 signature.TextXAlignment = Enum.TextXAlignment.Center
 
 
@@ -465,7 +465,7 @@ createButton("Vol","flyEnabled",function(state)
 		bg.CFrame = hrp.CFrame
 
 		local speed = 60
-		local smoothing = 0.2  -- plus c’est petit, plus c’est réactif
+		local smoothing = 0.2  
 
 		local conn
 		conn = RS.Heartbeat:Connect(function(dt)
@@ -478,27 +478,27 @@ createButton("Vol","flyEnabled",function(state)
 			end
 
 			local moveDir = humanoid.MoveDirection
-			local camCF = camera.CFrame  -- Récupérer la position de la caméra
+			local camCF = camera.CFrame  
 
 			local targetVelocity
-			local velocityY = 0  -- Valeur de Y initiale à 0 (pas de montée ou descente automatique)
+			local velocityY = 0  
 
 			if moveDir.Magnitude > 0 then
-				-- On utilise les directions locales pour bouger, pas affecté par la caméra
-				local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit  -- Mouvement horizontal dans l'espace local
+				
+				local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit  
 				targetVelocity = moveDirection * speed
 
-				-- Si on avance avec le joystick, la vitesse verticale suit l'inclinaison de la caméra
+				
 				velocityY = camCF.LookVector.Y * speed
 			else
 				targetVelocity = Vector3.new(0, 0, 0)
 			end
 
-			-- Lissage de la vitesse pour un arrêt progressif
+			
 			bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
 			bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
 
-			-- Garder l'orientation du personnage selon la caméra
+			
 			bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
 		end)
 	else
@@ -563,7 +563,7 @@ submitBtn.MouseButton1Click:Connect(function()
 			loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
 			wait(0.03)
 		end
-		passPage:Destroy()
+		passPage.Visible = false -- Changement ici : on cache au lieu de détruire
 		openFrame(frame)
 	else
 		passBox.Text = ""
