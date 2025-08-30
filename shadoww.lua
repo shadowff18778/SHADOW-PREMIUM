@@ -236,7 +236,7 @@ infoText.TextSize = 18
 infoText.BackgroundTransparency = 1
 infoText.TextXAlignment = Enum.TextXAlignment.Left
 
--- Fonction pour créer les boutons des joueurs
+-- Fonction pour créer les boutons des joueurs (MISE À JOUR)
 local function createPlayerButtons()
     -- Supprimer les anciens boutons (sauf le texte d’en-tête)
     for _, child in pairs(playerList:GetChildren()) do
@@ -250,12 +250,49 @@ local function createPlayerButtons()
         if plr ~= player then
             local playerBtn = Instance.new("TextButton", playerList)
             playerBtn.Size = UDim2.new(1, -10, 0, 30)
-            playerBtn.Text = plr.Name
             playerBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
             playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
             playerBtn.Font = Enum.Font.Gotham
             playerBtn.TextSize = 18
             Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
+            
+            -- Conteneur pour le texte et l'image pour le bon alignement
+            local contentFrame = Instance.new("Frame", playerBtn)
+            contentFrame.Size = UDim2.new(1,0,1,0)
+            contentFrame.BackgroundTransparency = 1
+            
+            -- Layout horizontal
+            local hLayout = Instance.new("UIListLayout", contentFrame)
+            hLayout.FillDirection = Enum.FillDirection.Horizontal
+            hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+            hLayout.Padding = UDim.new(0, 5)
+
+            -- Image de profil
+            local avatarImage = Instance.new("ImageLabel", contentFrame)
+            avatarImage.Size = UDim2.new(0, 24, 0, 24)
+            avatarImage.BackgroundTransparency = 1
+            Instance.new("UICorner", avatarImage).CornerRadius = UDim.new(0, 12)
+            
+            -- Nom du joueur
+            local playerNameLabel = Instance.new("TextLabel", contentFrame)
+            playerNameLabel.Size = UDim2.new(1, -29, 1, 0)
+            playerNameLabel.Text = plr.Name
+            playerNameLabel.Font = Enum.Font.GothamBold
+            playerNameLabel.TextSize = 18
+            playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerNameLabel.BackgroundTransparency = 1
+            playerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+            -- Chargement asynchrone de l'image de profil
+            spawn(function()
+                local userId = plr.UserId
+                local success, url = pcall(function()
+                    return game.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+                end)
+                if success then
+                    avatarImage.Image = url
+                end
+            end)
 
             playerBtn.MouseButton1Click:Connect(function()
                 if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
@@ -608,31 +645,31 @@ createButton("Noclip","noclip",function(state)
     end)
 end)
 
--- LOGIQUE DU KILL AURA
+-- LOGIQUE DU KILL AURA (MISE À JOUR)
 RS.Heartbeat:Connect(function()
     if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
         local hasAxe = false
-        -- On vérifie si le joueur a une hache équipée
-        if character:FindFirstChildOfClass("Tool") and character:FindFirstChildOfClass("Tool").Name:lower():find("hache") then
+        local tool = character:FindFirstChildOfClass("Tool")
+        if tool and tool.Name:lower():find("hache") then
             hasAxe = true
         end
-
+        
         if hasAxe then
             local myPosition = character.HumanoidRootPart.Position
             
-            -- On parcourt tous les objets dans le workspace pour trouver les cibles
+            -- On parcourt tous les modèles dans le jeu (meilleure performance)
             for _, target in pairs(workspace:GetChildren()) do
                 -- On vérifie que c'est une créature (modèle avec un Humanoid)
                 local humanoid = target:FindFirstChildOfClass("Humanoid")
                 local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
-
-                if humanoid and rootPart and target.Name ~= player.Name then
+                
+                -- On vérifie que la cible est une créature, qu'elle n'est pas le joueur et qu'elle a une partie du corps
+                if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name then
                     -- On vérifie si la cible est à moins de 500 mètres
                     if (myPosition - rootPart.Position).Magnitude <= 500 then
-                        -- Et qu'elle n'est pas déjà morte
-                        if humanoid.Health > 0 then
-                            humanoid.Health = 0
-                        end
+                        -- Pour débugger, on peut ajouter une ligne pour voir ce qui est tué
+                        print("Killing target:", target.Name)
+                        humanoid.Health = 0
                     end
                 end
             end
