@@ -87,7 +87,7 @@ local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0,400,0,300)
 frame.Position = UDim2.new(0.5,0,0.5,0)
 frame.AnchorPoint = Vector2.new(0.5,0.5)
-frame.BackgroundColor3 = Color3.fromRGB(20,20,20) -- Couleur de fond un peu plus claire
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
 frame.BorderSizePixel = 0
 frame.Visible = false
 frame.ClipsDescendants = true
@@ -439,22 +439,48 @@ _G.noclip = false
 local buttonY = 0.1
 local spacing = 0.18
 
+-- Fonction pour animer la couleur du bouton
+local function animateButtonColor(btn, startColor, endColor, duration)
+    local startTime = tick()
+    while tick() - startTime < duration do
+        local progress = (tick() - startTime) / duration
+        btn.BackgroundColor3 = startColor:Lerp(endColor, progress)
+        wait()
+    end
+    btn.BackgroundColor3 = endColor
+end
+
 local function createButton(name,toggleVar,callback)
     local btn = Instance.new("TextButton", mainPage)
     btn.Size = UDim2.new(0,280,0,35)
     btn.Position = UDim2.new(0.5,-140,buttonY,0)
     btn.Text = name..": OFF"
-    btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    local originalColor = Color3.fromRGB(30,30,30)
+    local onColor = Color3.fromRGB(0, 180, 0)
+    local originalStrokeColor = Color3.fromRGB(255,50,50)
+    local onStrokeColor = Color3.fromRGB(0, 255, 0)
+    
+    btn.BackgroundColor3 = originalColor
     btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 20
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
-    Instance.new("UIStroke", btn).Color = Color3.fromRGB(255,50,50)
+    local btnStroke = Instance.new("UIStroke", btn)
+    btnStroke.Color = originalStrokeColor
+    btnStroke.Thickness = 2
 
     btn.MouseButton1Click:Connect(function()
         _G[toggleVar] = not _G[toggleVar]
         btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
         callback(_G[toggleVar])
+        
+        if _G[toggleVar] then
+            animateButtonColor(btn, originalColor, onColor, 0.2)
+            btnStroke.Color = onStrokeColor
+        else
+            btn.BackgroundColor3 = originalColor
+            btnStroke.Color = originalStrokeColor
+        end
     end)
 
     buttonY = buttonY + spacing
@@ -483,7 +509,7 @@ createButton("Vol","flyEnabled",function(state)
         bg.CFrame = hrp.CFrame
 
         local speed = 60
-        local smoothing = 0.2  -- plus c’est petit, plus c’est réactif
+        local smoothing = 0.2
 
         local conn
         conn = RS.Heartbeat:Connect(function(dt)
@@ -496,27 +522,23 @@ createButton("Vol","flyEnabled",function(state)
             end
 
             local moveDir = humanoid.MoveDirection
-            local camCF = camera.CFrame  -- Récupérer la position de la caméra
+            local camCF = camera.CFrame
 
             local targetVelocity
-            local velocityY = 0  -- Valeur de Y initiale à 0 (pas de montée ou descente automatique)
+            local velocityY = 0
 
             if moveDir.Magnitude > 0 then
-                -- On utilise les directions locales pour bouger, pas affecté par la caméra
-                local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit  -- Mouvement horizontal dans l'espace local
+                local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit
                 targetVelocity = moveDirection * speed
 
-                -- Si on avance avec le joystick, la vitesse verticale suit l'inclinaison de la caméra
                 velocityY = camCF.LookVector.Y * speed
             else
                 targetVelocity = Vector3.new(0, 0, 0)
             end
 
-            -- Lissage de la vitesse pour un arrêt progressif
             bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
             bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
 
-            -- Garder l'orientation du personnage selon la caméra
             bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
         end)
     else
