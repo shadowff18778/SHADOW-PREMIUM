@@ -178,16 +178,37 @@ closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 22
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,8)
 
+-- NOUVEAU DESIGN POUR LE BOUTON REOPEN
 local reopenBtn = Instance.new("TextButton", gui)
-reopenBtn.Size = UDim2.new(0,120,0,35)
+reopenBtn.Size = UDim2.new(0,150,0,45) -- Taille plus grande
 reopenBtn.Position = UDim2.new(0,20,0,20)
-reopenBtn.Text = "SHADOW"
-reopenBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-reopenBtn.TextColor3 = Color3.fromRGB(255,0,0)
+reopenBtn.Text = "😈 SHADOW HUB"
+reopenBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+reopenBtn.TextColor3 = Color3.fromRGB(255, 50, 50)
 reopenBtn.Font = Enum.Font.GothamBold
 reopenBtn.TextSize = 20
 reopenBtn.Visible = false
 Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(0,10)
+
+-- Effet de bordure animée pour le bouton de réouverture
+local reopenBtnStroke = Instance.new("UIStroke", reopenBtn)
+reopenBtnStroke.Color = Color3.fromRGB(255, 50, 50)
+reopenBtnStroke.Thickness = 2
+
+local function animateReopenButton()
+    local startTime = tick()
+    while reopenBtn.Visible do
+        local hue = (tick() - startTime) % 1
+        reopenBtnStroke.Color = Color3.fromHSV(hue, 1, 1)
+        wait(0.01)
+    end
+end
+spawn(animateReopenButton)
+
+reopenBtn.MouseButton1Click:Connect(function()
+    openFrame(frame)
+    reopenBtn.Visible = false
+end)
 
 local mainPage = Instance.new("Frame", frame)
 mainPage.Size = UDim2.new(1,0,1,-45)
@@ -1105,14 +1126,14 @@ local function animateColor(textLabel)
         while true do
             for i=0,1,0.01 do
                 textLabel.TextColor3 = Color3.fromHSV(i,1,1)
-                wait(0.03)
+                wait(0.02)
             end
         end
     end)
 end
 
 animateColor(title)
-animateColor(reopenBtn)
+animateColor(reopenBtn.TextLabel)
 
 submitBtn.MouseButton1Click:Connect(function()
     if passBox.Text == "95741" then
