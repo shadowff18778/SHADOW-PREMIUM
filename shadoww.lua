@@ -130,6 +130,9 @@ title.TextSize = 28
 title.BackgroundTransparency = 1
 -- Les propriétés suivantes sont essentielles pour qu'il agisse comme un bouton
 title.TextScaled = false
+-- Correction: S'assurer que le bouton est cliquable et au-dessus des autres éléments
+title.Active = true
+title.ZIndex = 2
 
 -- LOGIQUE MISE À JOUR : Quand on clique sur le titre, on va sur la page de profil
 title.MouseButton1Click:Connect(function()
