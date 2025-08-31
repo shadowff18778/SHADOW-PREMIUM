@@ -696,6 +696,8 @@ _G.nameViewEnabled = false
 _G.trackerEnabled = false
 _G.spectatingEnabled = false
 
+local noclipConnection = nil -- Variable pour la connexion Noclip
+
 local buttonYMain = 0.1
 local spacing = 0.18
 
@@ -820,16 +822,31 @@ createButton("Saut", mainPage, "jumpEnabled", function(state)
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
+-- Correction de la fonction Noclip
 createButton("Noclip", mainPage, "noclip", function(state)
-    RS.Stepped:Connect(function()
-        if _G.noclip then
-            for _,part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+    -- Si la connexion existe déjà, on la déconnecte pour éviter les doublons
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+
+    if state then
+        -- Créer une seule connexion pour gérer le noclip
+        noclipConnection = RS.Stepped:Connect(function()
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
                     part.CanCollide = false
                 end
             end
+        end)
+    else
+        -- Réactiver la collision pour toutes les parties du personnage
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
         end
-    end)
+    end
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
