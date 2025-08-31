@@ -1,7 +1,12 @@
+--[[
+Ce script est optimisé pour être injecté et exécuté via un executor externe.
+Il gère l'interface utilisateur, les fonctionnalités de triche (hacks) et le mode spectateur.
+]]
+
 game.StarterGui:SetCore("SendNotification", {
-    Title = "😈SHADOW HUB😈",
-    Text = "chargement... 😈",
-    Duration = 7
+    Title = "😈SHADOW HUB😈",
+    Text = "chargement... 😈",
+    Duration = 7
 })
 
 local player = game.Players.LocalPlayer
@@ -9,11 +14,12 @@ local character = player.Character or player.CharacterAdded:Wait()
 local camera = workspace.CurrentCamera
 local RS = game:GetService("RunService")
 
+-- Le ScreenGui principal pour toutes les fenêtres
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "ShadowHub"
 
 -- =========================
--- PAGE MOT DE PASSE
+-- PAGE MOT DE PASSE (la première fenêtre qui s'affiche)
 -- =========================
 local passPage = Instance.new("Frame", gui)
 passPage.Size = UDim2.new(0, 380, 0, 250)
@@ -80,7 +86,7 @@ loadingBar.BackgroundColor3 = Color3.fromRGB(255,0,0)
 Instance.new("UICorner", loadingBar).CornerRadius = UDim.new(0,10)
 
 -- =========================
--- FRAME PRINCIPALE
+-- FRAME PRINCIPALE (La fenêtre principale du menu après connexion)
 -- =========================
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0,400,0,300)
@@ -96,20 +102,20 @@ frameStroke.Color = Color3.fromRGB(255, 50, 50)
 frameStroke.Thickness = 2
 
 local function openFrame(f)
-    f.Visible = true
-    f.Size = UDim2.new(0,0,0,0)
-    for i=0,1,0.05 do
-        f.Size = UDim2.new(0,400*i,0,300*i)
-        wait(0.01)
-    end
+    f.Visible = true
+    f.Size = UDim2.new(0,0,0,0)
+    for i=0,1,0.05 do
+        f.Size = UDim2.new(0,400*i,0,300*i)
+        wait(0.01)
+    end
 end
 
 local function closeFrame(f)
-    for i=1,0,-0.05 do
-        f.Size = UDim2.new(0,400*i,0,300*i)
-        wait(0.01)
-    end
-    f.Visible = false
+    for i=1,0,-0.05 do
+        f.Size = UDim2.new(0,400*i,0,300*i)
+        wait(0.01)
+    end
+    f.Visible = false
 end
 
 local header = Instance.new("Frame", frame)
@@ -223,76 +229,76 @@ infoText.BackgroundTransparency = 1
 infoText.TextXAlignment = Enum.TextXAlignment.Left
 
 local function createPlayerButtons()
-    for _, child in pairs(playerList:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
+    for _, child in pairs(playerList:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
 
-    for _, plr in pairs(game.Players:GetPlayers()) do
-        if plr ~= player then
-            local playerBtn = Instance.new("TextButton", playerList)
-            playerBtn.Size = UDim2.new(1, -10, 0, 30)
-            playerBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
-            playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
-            playerBtn.Font = Enum.Font.Gotham
-            playerBtn.TextSize = 18
-            playerBtn.Text = ""
-            Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= player then
+            local playerBtn = Instance.new("TextButton", playerList)
+            playerBtn.Size = UDim2.new(1, -10, 0, 30)
+            playerBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            playerBtn.TextColor3 = Color3.fromRGB(255,255,255)
+            playerBtn.Font = Enum.Font.Gotham
+            playerBtn.TextSize = 18
+            playerBtn.Text = ""
+            Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0,5)
 
-            local contentFrame = Instance.new("Frame", playerBtn)
-            contentFrame.Size = UDim2.new(1,0,1,0)
-            contentFrame.BackgroundTransparency = 1
+            local contentFrame = Instance.new("Frame", playerBtn)
+            contentFrame.Size = UDim2.new(1,0,1,0)
+            contentFrame.BackgroundTransparency = 1
 
-            local hLayout = Instance.new("UIListLayout", contentFrame)
-            hLayout.FillDirection = Enum.FillDirection.Horizontal
-            hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-            hLayout.Padding = UDim.new(0, 5)
+            local hLayout = Instance.new("UIListLayout", contentFrame)
+            hLayout.FillDirection = Enum.FillDirection.Horizontal
+            hLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+            hLayout.Padding = UDim.new(0, 5)
 
-            local avatarImage = Instance.new("ImageLabel", contentFrame)
-            avatarImage.Size = UDim2.new(0, 24, 0, 24)
-            avatarImage.BackgroundTransparency = 1
-            Instance.new("UICorner", avatarImage).CornerRadius = UDim.new(0, 12)
+            local avatarImage = Instance.new("ImageLabel", contentFrame)
+            avatarImage.Size = UDim2.new(0, 24, 0, 24)
+            avatarImage.BackgroundTransparency = 1
+            Instance.new("UICorner", avatarImage).CornerRadius = UDim.new(0, 12)
 
-            local playerNameLabel = Instance.new("TextLabel", contentFrame)
-            playerNameLabel.Size = UDim2.new(1, -29, 1, 0)
-            playerNameLabel.Text = plr.Name
-            playerNameLabel.Font = Enum.Font.GothamBold
-            playerNameLabel.TextSize = 18
-            playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            playerNameLabel.BackgroundTransparency = 1
-            playerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            local playerNameLabel = Instance.new("TextLabel", contentFrame)
+            playerNameLabel.Size = UDim2.new(1, -29, 1, 0)
+            playerNameLabel.Text = plr.Name
+            playerNameLabel.Font = Enum.Font.GothamBold
+            playerNameLabel.TextSize = 18
+            playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerNameLabel.BackgroundTransparency = 1
+            playerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-            spawn(function()
-                local userId = plr.UserId
-                local success, url = pcall(function()
-                    return game.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
-                end)
-                if success then
-                    avatarImage.Image = url
-                end
-            end)
+            spawn(function()
+                local userId = plr.UserId
+                local success, url = pcall(function()
+                    return game.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+                end)
+                if success then
+                    avatarImage.Image = url
+                end
+            end)
 
-            playerBtn.MouseButton1Click:Connect(function()
-                if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position + Vector3.new(0,3,0))
-                end
-            end)
-        end
-    end
+            playerBtn.MouseButton1Click:Connect(function()
+                if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position + Vector3.new(0,3,0))
+                end
+            end)
+        end
+    end
 
-    playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
+    playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
 end
 
 infoBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    infoPage.Visible = true
-    spawn(function()
-        while infoPage.Visible do
-            createPlayerButtons()
-            wait(1)
-        end
-    end)
+    settingsPage.Visible = false
+    infoPage.Visible = true
+    spawn(function()
+        while infoPage.Visible do
+            createPlayerButtons()
+            wait(1)
+        end
+    end)
 end)
 
 local gameSetBtn = Instance.new("TextButton", settingsPage)
@@ -348,34 +354,34 @@ local teleportPoint
 local marker
 
 setPointBtn.MouseButton1Click:Connect(function()
-    teleportPoint = character.HumanoidRootPart.Position
-    if marker then marker:Destroy() end
-    marker = Instance.new("Part", workspace)
-    marker.Size = Vector3.new(2,2,2)
-    marker.Anchored = true
-    marker.CanCollide = false
-    marker.BrickColor = BrickColor.Red()
-    marker.Position = teleportPoint + Vector3.new(0,2,0)
-    marker.Name = "TeleportMarker"
+    teleportPoint = character.HumanoidRootPart.Position
+    if marker then marker:Destroy() end
+    marker = Instance.new("Part", workspace)
+    marker.Size = Vector3.new(2,2,2)
+    marker.Anchored = true
+    marker.CanCollide = false
+    marker.BrickColor = BrickColor.Red()
+    marker.Position = teleportPoint + Vector3.new(0,2,0)
+    marker.Name = "TeleportMarker"
 end)
 
 goPointBtn.MouseButton1Click:Connect(function()
-    if teleportPoint then
-        character.HumanoidRootPart.CFrame = CFrame.new(teleportPoint + Vector3.new(0,3,0))
-    end
+    if teleportPoint then
+        character.HumanoidRootPart.CFrame = CFrame.new(teleportPoint + Vector3.new(0,3,0))
+    end
 end)
 
 removePointBtn.MouseButton1Click:Connect(function()
-    teleportPoint = nil
-    if marker then
-        marker:Destroy()
-        marker = nil
-    end
+    teleportPoint = nil
+    if marker then
+        marker:Destroy()
+        marker = nil
+    end
 end)
 
 gameSetBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    gamePage.Visible = true
+    settingsPage.Visible = false
+    gamePage.Visible = true
 end)
 
 local hackBtn = Instance.new("TextButton", settingsPage)
@@ -398,44 +404,44 @@ hackGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRG
 hackPage.Visible = false
 
 hackBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    hackPage.Visible = true
+    settingsPage.Visible = false
+    hackPage.Visible = true
 end)
 
 settingsBtn.MouseButton1Click:Connect(function()
-    settingsBtn.Visible = false
-    backArrowBtn.Visible = true
-    settingsPage.Visible = true
-    mainPage.Visible = false
+    settingsBtn.Visible = false
+    backArrowBtn.Visible = true
+    settingsPage.Visible = true
+    mainPage.Visible = false
 end)
 
 backArrowBtn.MouseButton1Click:Connect(function()
-    settingsBtn.Visible = true
-    backArrowBtn.Visible = false
-    settingsPage.Visible = false
-    infoPage.Visible = false
-    gamePage.Visible = false
-    hackPage.Visible = false
-    mainPage.Visible = true
+    settingsBtn.Visible = true
+    backArrowBtn.Visible = false
+    settingsPage.Visible = false
+    infoPage.Visible = false
+    gamePage.Visible = false
+    hackPage.Visible = false
+    mainPage.Visible = true
 end)
 
 infoBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    infoPage.Visible = true
+    settingsPage.Visible = false
+    infoPage.Visible = true
 end)
 gameSetBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    gamePage.Visible = true
+    settingsPage.Visible = false
+    gamePage.Visible = true
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
-    closeFrame(frame)
-    reopenBtn.Visible = true
+    closeFrame(frame)
+    reopenBtn.Visible = true
 end)
 
 reopenBtn.MouseButton1Click:Connect(function()
-    openFrame(frame)
-    reopenBtn.Visible = false
+    openFrame(frame)
+    reopenBtn.Visible = false
 end)
 
 local signature = Instance.new("TextLabel", frame)
@@ -450,12 +456,12 @@ signature.TextScaled = false
 signature.TextXAlignment = Enum.TextXAlignment.Center
 
 spawn(function()
-    while true do
-        for i=0,1,0.01 do
-            signature.TextColor3 = Color3.fromHSV(i,1,1)
-            wait(0.02)
-        end
-    end
+    while true do
+        for i=0,1,0.01 do
+            signature.TextColor3 = Color3.fromHSV(i,1,1)
+            wait(0.02)
+        end
+    end
 end)
 
 -- =========================
@@ -474,156 +480,156 @@ local buttonYMain = 0.1
 local spacing = 0.18
 
 local function animateButtonColor(btn, startColor, endColor, duration)
-    local startTime = tick()
-    while tick() - startTime < duration do
-        local progress = (tick() - startTime) / duration
-        btn.BackgroundColor3 = startColor:Lerp(endColor, progress)
-        wait()
-    end
-    btn.BackgroundColor3 = endColor
+    local startTime = tick()
+    while tick() - startTime < duration do
+        local progress = (tick() - startTime) / duration
+        btn.BackgroundColor3 = startColor:Lerp(endColor, progress)
+        wait()
+    end
+    btn.BackgroundColor3 = endColor
 end
 
 local function createButton(name, parent, toggleVar, callback, yPosition)
-    local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0,280,0,35)
-    btn.Position = UDim2.new(0.5,-140, yPosition, 0)
-    btn.Text = name..": OFF"
-    local originalColor = Color3.fromRGB(30,30,30)
-    local onColor = Color3.fromRGB(0, 180, 0)
-    local originalStrokeColor = Color3.fromRGB(255,50,50)
-    local onStrokeColor = Color3.fromRGB(0, 255, 0)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size = UDim2.new(0,280,0,35)
+    btn.Position = UDim2.new(0.5,-140, yPosition, 0)
+    btn.Text = name..": OFF"
+    local originalColor = Color3.fromRGB(30,30,30)
+    local onColor = Color3.fromRGB(0, 180, 0)
+    local originalStrokeColor = Color3.fromRGB(255,50,50)
+    local onStrokeColor = Color3.fromRGB(0, 255, 0)
 
-    btn.BackgroundColor3 = originalColor
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 20
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
-    local btnStroke = Instance.new("UIStroke", btn)
-    btnStroke.Color = originalStrokeColor
-    btnStroke.Thickness = 2
+    btn.BackgroundColor3 = originalColor
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 20
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+    local btnStroke = Instance.new("UIStroke", btn)
+    btnStroke.Color = originalStrokeColor
+    btnStroke.Thickness = 2
 
-    btn.MouseButton1Click:Connect(function()
-        _G[toggleVar] = not _G[toggleVar]
-        btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
-        callback(_G[toggleVar])
+    btn.MouseButton1Click:Connect(function()
+        _G[toggleVar] = not _G[toggleVar]
+        btn.Text = name..(_G[toggleVar] and ": ON" or ": OFF")
+        callback(_G[toggleVar])
 
-        if _G[toggleVar] then
-            animateButtonColor(btn, originalColor, onColor, 0.2)
-            btnStroke.Color = onStrokeColor
-        else
-            btn.BackgroundColor3 = originalColor
-            btnStroke.Color = originalStrokeColor
-        end
-    end)
-    return btn
+        if _G[toggleVar] then
+            animateButtonColor(btn, originalColor, onColor, 0.2)
+            btnStroke.Color = onStrokeColor
+        else
+            btn.BackgroundColor3 = originalColor
+            btnStroke.Color = originalStrokeColor
+        end
+    end)
+    return btn
 end
 
 -- =========================
 -- MISE EN PAGE DES BOUTONS PRINCIPAUX ET HACKS
 -- =========================
 createButton("Vol", mainPage, "flyEnabled", function(state)
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not hrp or not humanoid then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not hrp or not humanoid then return end
 
-    if state then
-        humanoid.PlatformStand = true
+    if state then
+        humanoid.PlatformStand = true
 
-        local bv = Instance.new("BodyVelocity", hrp)
-        bv.Name = "FlyVelocity"
-        bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-        bv.Velocity = Vector3.zero
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Name = "FlyVelocity"
+        bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+        bv.Velocity = Vector3.zero
 
-        local bg = Instance.new("BodyGyro", hrp)
-        bg.Name = "FlyGyro"
-        bg.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-        bg.P = 1e4
-        bg.CFrame = hrp.CFrame
+        local bg = Instance.new("BodyGyro", hrp)
+        bg.Name = "FlyGyro"
+        bg.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+        bg.P = 1e4
+        bg.CFrame = hrp.CFrame
 
-        local speed = 60
-        local smoothing = 0.2
+        local speed = 60
+        local smoothing = 0.2
 
-        local conn
-        conn = RS.Heartbeat:Connect(function(dt)
-            if not _G.flyEnabled then
-                conn:Disconnect()
-                bv:Destroy()
-                bg:Destroy()
-                humanoid.PlatformStand = false
-                return
-            end
+        local conn
+        conn = RS.Heartbeat:Connect(function(dt)
+            if not _G.flyEnabled then
+                conn:Disconnect()
+                bv:Destroy()
+                bg:Destroy()
+                humanoid.PlatformStand = false
+                return
+            end
 
-            local moveDir = humanoid.MoveDirection
-            local camCF = camera.CFrame
+            local moveDir = humanoid.MoveDirection
+            local camCF = camera.CFrame
 
-            local targetVelocity
-            local velocityY = 0
+            local targetVelocity
+            local velocityY = 0
 
-            if moveDir.Magnitude > 0 then
-                local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit
-                targetVelocity = moveDirection * speed
+            if moveDir.Magnitude > 0 then
+                local moveDirection = Vector3.new(moveDir.X, 0, moveDir.Z).unit
+                targetVelocity = moveDirection * speed
 
-                velocityY = camCF.LookVector.Y * speed
-            else
-                targetVelocity = Vector3.new(0, 0, 0)
-            end
+                velocityY = camCF.LookVector.Y * speed
+            else
+                targetVelocity = Vector3.new(0, 0, 0)
+            end
 
-            bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
-            bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
+            bv.Velocity = Vector3.new(targetVelocity.X, velocityY, targetVelocity.Z)
+            bv.Velocity = bv.Velocity:Lerp(targetVelocity, smoothing)
 
-            bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
-        end)
-    else
-        local oldBV = hrp:FindFirstChild("FlyVelocity")
-        if oldBV then oldBV:Destroy() end
-        local oldBG = hrp:FindFirstChild("FlyGyro")
-        if oldBG then oldBG:Destroy() end
-        humanoid.PlatformStand = false
-        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-    end
+            bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camCF.LookVector)
+        end)
+    else
+        local oldBV = hrp:FindFirstChild("FlyVelocity")
+        if oldBV then oldBV:Destroy() end
+        local oldBG = hrp:FindFirstChild("FlyGyro")
+        if oldBG then oldBG:Destroy() end
+        humanoid.PlatformStand = false
+        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 createButton("Vitesse", mainPage, "speedEnabled", function(state)
-    character.Humanoid.WalkSpeed = state and 100 or 16
+    character.Humanoid.WalkSpeed = state and 100 or 16
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 createButton("Saut", mainPage, "jumpEnabled", function(state)
-    character.Humanoid.JumpPower = state and 150 or 50
+    character.Humanoid.JumpPower = state and 150 or 50
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 createButton("Noclip", mainPage, "noclip", function(state)
-    RS.Stepped:Connect(function()
-        if _G.noclip then
-            for _,part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = false
-                end
-            end
-        end
-    end)
+    RS.Stepped:Connect(function()
+        if _G.noclip then
+            for _,part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 local buttonYHack = 0.1
 local function createHackButton(name, toggleVar, callback)
-    local btn = createButton(name, hackPage, toggleVar, callback, buttonYHack)
-    buttonYHack = buttonYHack + spacing
-    return btn
+    local btn = createButton(name, hackPage, toggleVar, callback, buttonYHack)
+    buttonYHack = buttonYHack + spacing
+    return btn
 end
 
 createHackButton("Kill Aura", "killAuraEnabled", function(state) end)
 
 local nameTags = {}
 createHackButton("Name View", "nameViewEnabled", function(state)
-    if not state then
-        for _, tag in pairs(nameTags) do
-            tag:Destroy()
-        end
-        nameTags = {}
-    end
+    if not state then
+        for _, tag in pairs(nameTags) do
+            tag:Destroy()
+        end
+        nameTags = {}
+    end
 end)
 
 local trackerFrame = Instance.new("Frame", gui)
@@ -644,7 +650,7 @@ trackerLabel.TextSize = 18
 trackerLabel.BackgroundTransparency = 1
 
 createHackButton("Tracker", "trackerEnabled", function(state)
-    trackerFrame.Visible = state
+    trackerFrame.Visible = state
 end)
 
 
@@ -682,58 +688,58 @@ local currentSpectatorIndex = 1
 local cameraConnection
 
 createHackButton("Spectateur", "spectatingEnabled", function(state)
-    leftArrowBtn.Visible = state
-    rightArrowBtn.Visible = state
+    leftArrowBtn.Visible = state
+    rightArrowBtn.Visible = state
 
-    if state then
-        -- On entre en mode spectateur
-        spectatorPlayers = {}
-        for _, p in pairs(game.Players:GetPlayers()) do
-            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                table.insert(spectatorPlayers, p)
-            end
-        end
-        currentSpectatorIndex = 1
-        
-        if #spectatorPlayers > 0 then
-            camera.CameraType = Enum.CameraType.Scriptable
-            if cameraConnection then cameraConnection:Disconnect() end
-            cameraConnection = RS.RenderStepped:Connect(function()
-                local target = spectatorPlayers[currentSpectatorIndex]
-                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                    camera.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 15) -- Déplace la caméra légèrement au-dessus et derrière le joueur
-                end
-            end)
-        else
-            -- Aucun joueur à observer, on désactive le mode
-            _G.spectatingEnabled = false
-            leftArrowBtn.Visible = false
-            rightArrowBtn.Visible = false
-            camera.CameraType = Enum.CameraType.Custom
-        end
-    else
-        -- On quitte le mode spectateur
-        if cameraConnection then cameraConnection:Disconnect() end
-        camera.CameraType = Enum.CameraType.Custom
-    end
+    if state then
+        -- On entre en mode spectateur
+        spectatorPlayers = {}
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                table.insert(spectatorPlayers, p)
+            end
+        end
+        currentSpectatorIndex = 1
+        
+        if #spectatorPlayers > 0 then
+            camera.CameraType = Enum.CameraType.Scriptable
+            if cameraConnection then cameraConnection:Disconnect() end
+            cameraConnection = RS.RenderStepped:Connect(function()
+                local target = spectatorPlayers[currentSpectatorIndex]
+                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                    camera.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 15) -- Déplace la caméra légèrement au-dessus et derrière le joueur
+                end
+            end)
+        else
+            -- Aucun joueur à observer, on désactive le mode
+            _G.spectatingEnabled = false
+            leftArrowBtn.Visible = false
+            rightArrowBtn.Visible = false
+            camera.CameraType = Enum.CameraType.Custom
+        end
+    else
+        -- On quitte le mode spectateur
+        if cameraConnection then cameraConnection:Disconnect() end
+        camera.CameraType = Enum.CameraType.Custom
+    end
 end)
 
 leftArrowBtn.MouseButton1Click:Connect(function()
-    if #spectatorPlayers > 0 then
-        currentSpectatorIndex = currentSpectatorIndex - 1
-        if currentSpectatorIndex < 1 then
-            currentSpectatorIndex = #spectatorPlayers
-        end
-    end
+    if #spectatorPlayers > 0 then
+        currentSpectatorIndex = currentSpectatorIndex - 1
+        if currentSpectatorIndex < 1 then
+            currentSpectatorIndex = #spectatorPlayers
+        end
+    end
 end)
 
 rightArrowBtn.MouseButton1Click:Connect(function()
-    if #spectatorPlayers > 0 then
-        currentSpectatorIndex = currentSpectatorIndex + 1
-        if currentSpectatorIndex > #spectatorPlayers then
-            currentSpectatorIndex = 1
-        end
-    end
+    if #spectatorPlayers > 0 then
+        currentSpectatorIndex = currentSpectatorIndex + 1
+        if currentSpectatorIndex > #spectatorPlayers then
+            currentSpectatorIndex = 1
+        end
+    end
 end)
 
 --- FIN DU NOUVEAU BOUTON SPECTATEUR ---
@@ -741,110 +747,110 @@ end)
 
 -- LOGIQUE GLOBALE DANS UNE BOUCLE
 RS.Heartbeat:Connect(function()
-    local myPosition = character.HumanoidRootPart.Position
+    local myPosition = character.HumanoidRootPart.Position
 
-    if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
-        local hasAxe = false
-        local tool = character:FindFirstChildOfClass("Tool")
-        if tool and (tool.Name:lower():find("hache") or tool.Name:lower():find("axe")) then
-            hasAxe = true
-        end
+    if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
+        local hasAxe = false
+        local tool = character:FindFirstChildOfClass("Tool")
+        if tool and (tool.Name:lower():find("hache") or tool.Name:lower():find("axe")) then
+            hasAxe = true
+        end
 
-        if hasAxe then
-            for _, target in pairs(workspace:GetChildren()) do
-                local humanoid = target:FindFirstChildOfClass("Humanoid")
-                local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
+        if hasAxe then
+            for _, target in pairs(workspace:GetChildren()) do
+                local humanoid = target:FindFirstChildOfClass("Humanoid")
+                local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
 
-                if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name then
-                    if (myPosition - rootPart.Position).Magnitude <= 500 then
-                        humanoid.Health = 0
-                    end
-                end
-            end
-        end
-    end
+                if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name then
+                    if (myPosition - rootPart.Position).Magnitude <= 500 then
+                        humanoid.Health = 0
+                    end
+                end
+            end
+        end
+    end
 
-    if _G.nameViewEnabled then
-        for _, plr in pairs(game.Players:GetPlayers()) do
-            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                if not nameTags[plr.Name] then
-                    local nameTag = Instance.new("BillboardGui")
-                    nameTag.Size = UDim2.new(0, 150, 0, 20)
-                    nameTag.Adornee = plr.Character:FindFirstChild("Head") or plr.Character.HumanoidRootPart
-                    nameTag.AlwaysOnTop = true
-                    nameTag.Parent = plr.Character
+    if _G.nameViewEnabled then
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                if not nameTags[plr.Name] then
+                    local nameTag = Instance.new("BillboardGui")
+                    nameTag.Size = UDim2.new(0, 150, 0, 20)
+                    nameTag.Adornee = plr.Character:FindFirstChild("Head") or plr.Character.HumanoidRootPart
+                    nameTag.AlwaysOnTop = true
+                    nameTag.Parent = plr.Character
 
-                    local nameLabel = Instance.new("TextLabel")
-                    nameLabel.Size = UDim2.new(1,0,1,0)
-                    nameLabel.Text = plr.Name
-                    nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
-                    nameLabel.Font = Enum.Font.GothamBold
-                    nameLabel.TextSize = 18
-                    nameLabel.BackgroundTransparency = 1
-                    nameLabel.Parent = nameTag
-                    nameTags[plr.Name] = nameTag
-                end
-            elseif nameTags[plr.Name] then
-                nameTags[plr.Name]:Destroy()
-                nameTags[plr.Name] = nil
-            end
-        end
-    else
-        for _, tag in pairs(nameTags) do
-            tag:Destroy()
-        end
-        nameTags = {}
-    end
+                    local nameLabel = Instance.new("TextLabel")
+                    nameLabel.Size = UDim2.new(1,0,1,0)
+                    nameLabel.Text = plr.Name
+                    nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                    nameLabel.Font = Enum.Font.GothamBold
+                    nameLabel.TextSize = 18
+                    nameLabel.BackgroundTransparency = 1
+                    nameLabel.Parent = nameTag
+                    nameTags[plr.Name] = nameTag
+                end
+            elseif nameTags[plr.Name] then
+                nameTags[plr.Name]:Destroy()
+                nameTags[plr.Name] = nil
+            end
+        end
+    else
+        for _, tag in pairs(nameTags) do
+            tag:Destroy()
+        end
+        nameTags = {}
+    end
 
-    if _G.trackerEnabled then
-        local closestPlayer
-        local closestDistance = math.huge
+    if _G.trackerEnabled then
+        local closestPlayer
+        local closestDistance = math.huge
 
-        for _, plr in pairs(game.Players:GetPlayers()) do
-            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                local distance = (myPosition - plr.Character.HumanoidRootPart.Position).Magnitude
-                if distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = plr
-                end
-            end
-        end
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = (myPosition - plr.Character.HumanoidRootPart.Position).Magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = plr
+                end
+            end
+        end
 
-        if closestPlayer then
-            trackerLabel.Text = "Distance: "..math.floor(closestDistance).." m"
-        else
-            trackerLabel.Text = "Distance: N/A"
-        end
-    end
+        if closestPlayer then
+            trackerLabel.Text = "Distance: "..math.floor(closestDistance).." m"
+        else
+            trackerLabel.Text = "Distance: N/A"
+        end
+    end
 end)
 
 local function animateColor(textLabel)
-    spawn(function()
-        while true do
-            for i=0,1,0.01 do
-                textLabel.TextColor3 = Color3.fromHSV(i,1,1)
-                wait(0.03)
-            end
-        end
-    end)
+    spawn(function()
+        while true do
+            for i=0,1,0.01 do
+                textLabel.TextColor3 = Color3.fromHSV(i,1,1)
+                wait(0.03)
+            end
+        end
+    end)
 end
 
 animateColor(title)
 animateColor(reopenBtn)
 
 submitBtn.MouseButton1Click:Connect(function()
-    if passBox.Text == "95741" then
-        loadingLabel.Visible = true
-        loadingBarFrame.Visible = true
-        for i=1,100 do
-            loadingBar.Size = UDim2.new(i/100,0,1,0)
-            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
-            wait(0.01)
-        end
-        passPage:Destroy()
-        openFrame(frame)
-    else
-        passBox.Text = ""
-        passBox.PlaceholderText = "Mot de passe incorrect"
-    end
+    if passBox.Text == "95741" then
+        loadingLabel.Visible = true
+        loadingBarFrame.Visible = true
+        for i=1,100 do
+            loadingBar.Size = UDim2.new(i/100,0,1,0)
+            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
+            wait(0.01)
+        end
+        passPage:Destroy()
+        openFrame(frame)
+    else
+        passBox.Text = ""
+        passBox.PlaceholderText = "Mot de passe incorrect"
+    end
 end)
