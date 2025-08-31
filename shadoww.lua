@@ -1,6 +1,6 @@
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
-    Text = "Loading... 😈",
+    Text = "Chargement... 😈",
     Duration = 7
 })
 
@@ -31,7 +31,7 @@ passPage.Visible = true
 local passTitle = Instance.new("TextLabel", passPage)
 passTitle.Size = UDim2.new(1,-40,0,50)
 passTitle.Position = UDim2.new(0,20,0,20)
-passTitle.Text = "SECURE ACCESS"
+passTitle.Text = "ACCÈS SÉCURISÉ"
 passTitle.TextColor3 = Color3.fromRGB(255,50,50)
 passTitle.Font = Enum.Font.GothamBold
 passTitle.TextSize = 26
@@ -40,7 +40,7 @@ passTitle.BackgroundTransparency = 1
 local passBox = Instance.new("TextBox", passPage)
 passBox.Size = UDim2.new(0,250,0,40)
 passBox.Position = UDim2.new(0.5,-125,0.5,-20)
-passBox.PlaceholderText = "Enter password"
+passBox.PlaceholderText = "Entrer le mot de passe"
 passBox.TextColor3 = Color3.fromRGB(255,255,255)
 passBox.BackgroundColor3 = Color3.fromRGB(45,45,45)
 passBox.Font = Enum.Font.Gotham
@@ -52,7 +52,7 @@ Instance.new("UIStroke", passBox).Thickness = 2
 local submitBtn = Instance.new("TextButton", passPage)
 submitBtn.Size = UDim2.new(0,140,0,40)
 submitBtn.Position = UDim2.new(0.5,-70,0.7,0)
-submitBtn.Text = "Validate"
+submitBtn.Text = "Valider"
 submitBtn.TextColor3 = Color3.fromRGB(255,255,255)
 submitBtn.BackgroundColor3 = Color3.fromRGB(255,50,50)
 submitBtn.Font = Enum.Font.GothamBold
@@ -62,7 +62,7 @@ Instance.new("UICorner", submitBtn).CornerRadius = UDim.new(0,12)
 local loadingLabel = Instance.new("TextLabel", passPage)
 loadingLabel.Size = UDim2.new(0, 300, 0, 20)
 loadingLabel.Position = UDim2.new(0.5, -150, 0.8, 0)
-loadingLabel.Text = "Loading..."
+loadingLabel.Text = "Chargement..."
 loadingLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 loadingLabel.Font = Enum.Font.Gotham
 loadingLabel.TextSize = 18
@@ -188,7 +188,7 @@ settingsPage.Visible = false
 local infoBtn = Instance.new("TextButton", settingsPage)
 infoBtn.Size = UDim2.new(0,180,0,35)
 infoBtn.Position = UDim2.new(0.5,-90,0.2,0)
-infoBtn.Text = "Player Infos"
+infoBtn.Text = "Infos Joueurs"
 infoBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
 infoBtn.TextColor3 = Color3.fromRGB(255,255,255)
 infoBtn.Font = Enum.Font.GothamBold
@@ -217,7 +217,7 @@ listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local infoText = Instance.new("TextLabel", playerList)
 infoText.Size = UDim2.new(1,0,0,30)
-infoText.Text = "👤 Players in the game:"
+infoText.Text = "👤 Joueurs dans le jeu :"
 infoText.TextColor3 = Color3.fromRGB(200,200,200)
 infoText.Font = Enum.Font.GothamBold
 infoText.TextSize = 18
@@ -455,6 +455,7 @@ title.MouseButton1Click:Connect(function()
     infoPage.Visible = false
     gamePage.Visible = false
     hackPage.Visible = false
+    graphPage.Visible = false
 
     -- Player info UI elements
     for _, child in pairs(playerInfoPage:GetChildren()) do
@@ -473,7 +474,7 @@ title.MouseButton1Click:Connect(function()
     playerNameLabel.Size = UDim2.new(1, -20, 0, 30)
     playerNameLabel.Position = UDim2.new(0.5, -100, 0.45, 0)
     playerNameLabel.AnchorPoint = Vector2.new(0.5, 0)
-    playerNameLabel.Text = "Name: "..player.Name
+    playerNameLabel.Text = "Nom: "..player.Name
     playerNameLabel.TextColor3 = Color3.fromRGB(255,255,255)
     playerNameLabel.Font = Enum.Font.GothamBold
     playerNameLabel.TextSize = 20
@@ -494,7 +495,7 @@ title.MouseButton1Click:Connect(function()
     accountAgeLabel.Position = UDim2.new(0.5, -100, 0.65, 0)
     accountAgeLabel.AnchorPoint = Vector2.new(0.5, 0)
     local accountAgeDays = math.floor(player.AccountAge)
-    accountAgeLabel.Text = "Account age: "..accountAgeDays.." days"
+    accountAgeLabel.Text = "Ancienneté du compte : "..accountAgeDays.." jours"
     accountAgeLabel.TextColor3 = Color3.fromRGB(255,255,255)
     accountAgeLabel.Font = Enum.Font.GothamBold
     accountAgeLabel.TextSize = 20
@@ -546,7 +547,7 @@ end)
 local signature = Instance.new("TextLabel", frame)
 signature.Size = UDim2.new(1,0,0,15)
 signature.Position = UDim2.new(0,0,1,-20)
-signature.Text = "Powered by SHADOW"
+signature.Text = "Propulsé par SHADOW"
 signature.Font = Enum.Font.GothamBold
 signature.TextSize = 12
 signature.TextColor3 = Color3.fromRGB(255,0,0)
@@ -924,7 +925,7 @@ local function toggleFpsBoost(state)
 end
 
 -- NEW: Buttons inside the Graph page
-createButton("Light", graphPage, "lightEnabled", toggleLight, 0.1)
+createButton("Lumière", graphPage, "lightEnabled", toggleLight, 0.1)
 createButton("FPS Boost", graphPage, "fpsBoostEnabled", toggleFpsBoost, 0.1 + spacing)
 
 -- GLOBAL LOGIC IN A LOOP
@@ -936,7 +937,7 @@ RS.Heartbeat:Connect(function()
             local humanoid = target:FindFirstChildOfClass("Humanoid")
             local rootPart = target:FindFirstChildOfClass("HumanoidRootPart")
 
-            if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name and target.Name:lower() == "wolf" or target.Name:lower() == "rabbit" then
+            if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name and (target.Name:lower() == "wolf" or target.Name:lower() == "rabbit") then
                 if (myPosition - rootPart.Position).Magnitude <= 50 then
                     humanoid.Health = 0
                 end
@@ -1021,10 +1022,10 @@ submitBtn.MouseButton1Click:Connect(function()
             loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
             wait(0.01)
         end
-        passPage:Destroy()
+        passPage.Visible = false
         openFrame(frame)
     else
         passBox.Text = ""
-        passBox.PlaceholderText = "Incorrect password"
+        passBox.PlaceholderText = "Mot de passe incorrect"
     end
 end)
