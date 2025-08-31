@@ -1,14 +1,8 @@
---[[
- 
-    SCRIPT SHADOW HUB
-    Version améliorée avec de nouvelles fonctionnalités et corrections.
 
-]]
 
--- Initialisation et services Roblox
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
-    Text = "chargement...",
+    Text = "chargement... 😈",
     Duration = 7
 })
 
@@ -126,7 +120,7 @@ header.Size = UDim2.new(1,0,0,45)
 header.BackgroundColor3 = Color3.fromRGB(15,15,15)
 Instance.new("UICorner", header).CornerRadius = UDim.new(0,15)
 
-local title = Instance.new("TextButton", header) -- CHANGEMENT ICI: TextLabel devient un TextButton pour le clic
+local title = Instance.new("TextLabel", header)
 title.Size = UDim2.new(1,-90,1,0)
 title.Position = UDim2.new(0,50,0,0)
 title.Text = "SHADOW HUB"
@@ -406,34 +400,9 @@ local hackGradient = Instance.new("UIGradient", hackPage)
 hackGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 hackPage.Visible = false
 
--- NOUVELLE PAGE ET BOUTONS pour les graphiques
-local graphBtn = Instance.new("TextButton", settingsPage)
-graphBtn.Size = UDim2.new(0,180,0,35)
-graphBtn.Position = UDim2.new(0.5,-90,0.65,0)
-graphBtn.Text = "GRAPH"
-graphBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-graphBtn.TextColor3 = Color3.fromRGB(255,255,255)
-graphBtn.Font = Enum.Font.GothamBold
-graphBtn.TextSize = 20
-Instance.new("UICorner", graphBtn).CornerRadius = UDim.new(0,10)
-Instance.new("UIStroke", graphBtn).Color = Color3.fromRGB(255,50,50)
-
-local graphPage = Instance.new("Frame", frame)
-graphPage.Size = UDim2.new(1,0,1,-45)
-graphPage.Position = UDim2.new(0,0,0,45)
-graphPage.BackgroundTransparency = 1
-local graphGradient = Instance.new("UIGradient", graphPage)
-graphGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
-graphPage.Visible = false
-
 hackBtn.MouseButton1Click:Connect(function()
     settingsPage.Visible = false
     hackPage.Visible = true
-end)
-
-graphBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    graphPage.Visible = true
 end)
 
 settingsBtn.MouseButton1Click:Connect(function()
@@ -450,8 +419,6 @@ backArrowBtn.MouseButton1Click:Connect(function()
     infoPage.Visible = false
     gamePage.Visible = false
     hackPage.Visible = false
-    graphPage.Visible = false -- Ajout de la nouvelle page
-    playerInfoPage.Visible = false -- Ajout de la nouvelle page
     mainPage.Visible = true
 end)
 
@@ -474,102 +441,6 @@ reopenBtn.MouseButton1Click:Connect(function()
     reopenBtn.Visible = false
 end)
 
--- NOUVELLE PAGE: Infos personnelles
-local playerInfoPage = Instance.new("Frame", frame)
-playerInfoPage.Size = UDim2.new(1,0,1,-45)
-playerInfoPage.Position = UDim2.new(0,0,0,45)
-playerInfoPage.BackgroundTransparency = 1
-local playerInfoGradient = Instance.new("UIGradient", playerInfoPage)
-playerInfoGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
-playerInfoPage.Visible = false
-
-local playerInfoImg = Instance.new("ImageLabel", playerInfoPage)
-playerInfoImg.Size = UDim2.new(0,100,0,100)
-playerInfoImg.Position = UDim2.new(0.5,-50,0.1,0)
-playerInfoImg.BackgroundTransparency = 1
-Instance.new("UICorner", playerInfoImg).CornerRadius = UDim.new(0,50)
-
-local playerInfoName = Instance.new("TextLabel", playerInfoPage)
-playerInfoName.Size = UDim2.new(1,0,0,30)
-playerInfoName.Position = UDim2.new(0,0,0.45,0)
-playerInfoName.BackgroundTransparency = 1
-playerInfoName.Text = "Nom: " .. player.Name
-playerInfoName.TextColor3 = Color3.fromRGB(255,255,255)
-playerInfoName.Font = Enum.Font.GothamBold
-playerInfoName.TextSize = 20
-
-local playerInfoID = Instance.new("TextLabel", playerInfoPage)
-playerInfoID.Size = UDim2.new(1,0,0,30)
-playerInfoID.Position = UDim2.new(0,0,0.55,0)
-playerInfoID.BackgroundTransparency = 1
-playerInfoID.Text = "ID: " .. player.UserId
-playerInfoID.TextColor3 = Color3.fromRGB(255,255,255)
-playerInfoID.Font = Enum.Font.GothamBold
-playerInfoID.TextSize = 20
-
-local playerInfoAge = Instance.new("TextLabel", playerInfoPage)
-playerInfoAge.Size = UDim2.new(1,0,0,30)
-playerInfoAge.Position = UDim2.new(0,0,0.65,0)
-playerInfoAge.BackgroundTransparency = 1
-playerInfoAge.Text = "Ancienneté: " .. player.AccountAge .. " jours"
-playerInfoAge.TextColor3 = Color3.fromRGB(255,255,255)
-playerInfoAge.Font = Enum.Font.GothamBold
-playerInfoAge.TextSize = 20
-
-local backPlayerInfoBtn = Instance.new("TextButton", header)
-backPlayerInfoBtn.Size = UDim2.new(0,35,0,35)
-backPlayerInfoBtn.Position = UDim2.new(0,5,0,5)
-backPlayerInfoBtn.Text = "←"
-backPlayerInfoBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
-backPlayerInfoBtn.TextColor3 = Color3.fromRGB(255,255,255)
-backPlayerInfoBtn.Font = Enum.Font.GothamBold
-backPlayerInfoBtn.TextSize = 22
-Instance.new("UICorner", backPlayerInfoBtn).CornerRadius = UDim.new(0,8)
-backPlayerInfoBtn.Visible = false
-
-backPlayerInfoBtn.MouseButton1Click:Connect(function()
-    backPlayerInfoBtn.Visible = false
-    settingsBtn.Visible = true
-    playerInfoPage.Visible = false
-    mainPage.Visible = true
-end)
-
--- Logique pour la page d'info du joueur
-title.MouseButton1Click:Connect(function()
-    mainPage.Visible = false
-    settingsPage.Visible = false
-    infoPage.Visible = false
-    gamePage.Visible = false
-    hackPage.Visible = false
-    graphPage.Visible = false
-    playerInfoPage.Visible = true
-    settingsBtn.Visible = false
-    backPlayerInfoBtn.Visible = true
-
-    -- Met à jour les infos du joueur
-    playerInfoName.Text = "Nom: " .. player.Name
-    playerInfoID.Text = "ID: " .. player.UserId
-    playerInfoAge.Text = "Ancienneté: " .. player.AccountAge .. " jours"
-    spawn(function()
-        local success, url = pcall(function()
-            return game.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
-        end)
-        if success then
-            playerInfoImg.Image = url
-        end
-    end)
-    -- Anime le texte du titre de la page
-    local colorAnim
-    if colorAnim then colorAnim:Disconnect() end
-    colorAnim = RS.Heartbeat:Connect(function()
-        playerInfoName.TextColor3 = Color3.fromHSV(tick() % 1, 1, 1)
-        playerInfoID.TextColor3 = Color3.fromHSV(tick() % 1 + 0.2, 1, 1)
-        playerInfoAge.TextColor3 = Color3.fromHSV(tick() % 1 + 0.4, 1, 1)
-    end)
-end)
-
-
--- Signature animée
 local signature = Instance.new("TextLabel", frame)
 signature.Size = UDim2.new(1,0,0,15)
 signature.Position = UDim2.new(0,0,1,-20)
@@ -601,8 +472,6 @@ _G.killAuraEnabled = false
 _G.nameViewEnabled = false
 _G.trackerEnabled = false
 _G.spectatingEnabled = false
-_G.lightEnabled = false
-_G.fpsEnabled = false
 
 local buttonYMain = 0.1
 local spacing = 0.18
@@ -681,10 +550,8 @@ createButton("Vol", mainPage, "flyEnabled", function(state)
         conn = RS.Heartbeat:Connect(function(dt)
             if not _G.flyEnabled then
                 conn:Disconnect()
-                local oldBV = hrp:FindFirstChild("FlyVelocity")
-                if oldBV then oldBV:Destroy() end
-                local oldBG = hrp:FindFirstChild("FlyGyro")
-                if oldBG then oldBG:Destroy() end
+                bv:Destroy()
+                bg:Destroy()
                 humanoid.PlatformStand = false
                 return
             end
@@ -731,21 +598,15 @@ end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 createButton("Noclip", mainPage, "noclip", function(state)
-    if state then
-        local parts = character:GetDescendants()
-        for _, part in ipairs(parts) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
+    RS.Stepped:Connect(function()
+        if _G.noclip then
+            for _,part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = false
+                end
             end
         end
-    else
-        local parts = character:GetDescendants()
-        for _, part in ipairs(parts) do
-            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                part.CanCollide = true
-            end
-        end
-    end
+    end)
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
@@ -756,9 +617,7 @@ local function createHackButton(name, toggleVar, callback)
     return btn
 end
 
-createHackButton("Kill Aura", "killAuraEnabled", function(state)
-    -- Le hack est géré dans la boucle Heartbeat
-end)
+createHackButton("Kill Aura", "killAuraEnabled", function(state) end)
 
 local nameTags = {}
 createHackButton("Name View", "nameViewEnabled", function(state)
@@ -921,45 +780,11 @@ end)
 
 --- FIN DU NOUVEAU BOUTON SPECTATEUR ---
 
--- NOUVEAUX BOUTONS GRAPH ET LOGIQUE
-local buttonYGraph = 0.1
-local function createGraphButton(name, toggleVar, callback)
-    local btn = createButton(name, graphPage, toggleVar, callback, buttonYGraph)
-    buttonYGraph = buttonYGraph + spacing
-    return btn
-end
-
--- Lumière
-local playerLight
-createGraphButton("Lumière", "lightEnabled", function(state)
-    if state then
-        playerLight = Instance.new("PointLight", character.HumanoidRootPart)
-        playerLight.Color = Color3.fromRGB(255, 255, 200)
-        playerLight.Brightness = 2
-        playerLight.Range = 60
-    else
-        if playerLight then
-            playerLight:Destroy()
-            playerLight = nil
-        end
-    end
-end)
-
--- Fluidité (FPS)
-createGraphButton("Fluidité", "fpsEnabled", function(state)
-    if state then
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Level1
-    else
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-    end
-end)
-
 
 -- LOGIQUE GLOBALE DANS UNE BOUCLE
 RS.Heartbeat:Connect(function()
     local myPosition = character.HumanoidRootPart.Position
 
-    -- Amélioration du Kill Aura pour cibler les Loups et Lapins
     if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
         local hasAxe = false
         local tool = character:FindFirstChildOfClass("Tool")
@@ -972,8 +797,7 @@ RS.Heartbeat:Connect(function()
                 local humanoid = target:FindFirstChildOfClass("Humanoid")
                 local rootPart = target:FindFirstChildOfClass("HumanoidRootPart") or (target:FindFirstChild("Torso") or target:FindFirstChild("Head"))
 
-                -- Cible spécifiquement les "Wolf" et "Rabbit"
-                if humanoid and rootPart and humanoid.Health > 0 and (target.Name == "Wolf" or target.Name == "Rabbit") then
+                if humanoid and rootPart and humanoid.Health > 0 and target.Name ~= player.Name then
                     if (myPosition - rootPart.Position).Magnitude <= 500 then
                         humanoid.Health = 0
                     end
