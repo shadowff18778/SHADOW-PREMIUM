@@ -451,6 +451,7 @@ backArrowBtn.MouseButton1Click:Connect(function()
     gamePage.Visible = false
     hackPage.Visible = false
     graphPage.Visible = false -- Ajout de la nouvelle page
+    playerInfoPage.Visible = false -- Ajout de la nouvelle page
     mainPage.Visible = true
 end)
 
@@ -515,6 +516,24 @@ playerInfoAge.TextColor3 = Color3.fromRGB(255,255,255)
 playerInfoAge.Font = Enum.Font.GothamBold
 playerInfoAge.TextSize = 20
 
+local backPlayerInfoBtn = Instance.new("TextButton", header)
+backPlayerInfoBtn.Size = UDim2.new(0,35,0,35)
+backPlayerInfoBtn.Position = UDim2.new(0,5,0,5)
+backPlayerInfoBtn.Text = "←"
+backPlayerInfoBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+backPlayerInfoBtn.TextColor3 = Color3.fromRGB(255,255,255)
+backPlayerInfoBtn.Font = Enum.Font.GothamBold
+backPlayerInfoBtn.TextSize = 22
+Instance.new("UICorner", backPlayerInfoBtn).CornerRadius = UDim.new(0,8)
+backPlayerInfoBtn.Visible = false
+
+backPlayerInfoBtn.MouseButton1Click:Connect(function()
+    backPlayerInfoBtn.Visible = false
+    settingsBtn.Visible = true
+    playerInfoPage.Visible = false
+    mainPage.Visible = true
+end)
+
 -- Logique pour la page d'info du joueur
 title.MouseButton1Click:Connect(function()
     mainPage.Visible = false
@@ -524,6 +543,8 @@ title.MouseButton1Click:Connect(function()
     hackPage.Visible = false
     graphPage.Visible = false
     playerInfoPage.Visible = true
+    settingsBtn.Visible = false
+    backPlayerInfoBtn.Visible = true
 
     -- Met à jour les infos du joueur
     playerInfoName.Text = "Nom: " .. player.Name
@@ -546,6 +567,7 @@ title.MouseButton1Click:Connect(function()
         playerInfoAge.TextColor3 = Color3.fromHSV(tick() % 1 + 0.4, 1, 1)
     end)
 end)
+
 
 -- Signature animée
 local signature = Instance.new("TextLabel", frame)
@@ -659,8 +681,10 @@ createButton("Vol", mainPage, "flyEnabled", function(state)
         conn = RS.Heartbeat:Connect(function(dt)
             if not _G.flyEnabled then
                 conn:Disconnect()
-                bv:Destroy()
-                bg:Destroy()
+                local oldBV = hrp:FindFirstChild("FlyVelocity")
+                if oldBV then oldBV:Destroy() end
+                local oldBG = hrp:FindFirstChild("FlyGyro")
+                if oldBG then oldBG:Destroy() end
                 humanoid.PlatformStand = false
                 return
             end
@@ -707,15 +731,21 @@ end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
 createButton("Noclip", mainPage, "noclip", function(state)
-    RS.Stepped:Connect(function()
-        if _G.noclip then
-            for _,part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = false
-                end
+    if state then
+        local parts = character:GetDescendants()
+        for _, part in ipairs(parts) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
             end
         end
-    end)
+    else
+        local parts = character:GetDescendants()
+        for _, part in ipairs(parts) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
+            end
+        end
+    end
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
