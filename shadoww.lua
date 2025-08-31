@@ -916,7 +916,7 @@ spawn(function()
         local minutes = math.floor((timeRemaining % 3600) / 60)
         local seconds = timeRemaining % 60
         
-        countdownLabel.Text = string.format("Temps restant avant 21h00 : %02d:%02d:%02d", hours, minutes, seconds)
+        countdownLabel.Text = string.format("Mise à jour dans : %02d:%02d:%02d", hours, minutes, seconds)
     end
 end)
 
