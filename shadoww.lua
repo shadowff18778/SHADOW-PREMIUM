@@ -428,9 +428,29 @@ gameSetBtn.MouseButton1Click:Connect(function()
     gamePage.Visible = true
 end)
 
-closeBtn.MouseButton1Click:Connect(function()
-    closeFrame(frame)
-    reopenBtn.Visible = true
+-- Nouvelle logique pour le bouton de fermeture
+local closeHoldTime = 3 -- Temps en secondes pour activer la confirmation
+local buttonHoldStartTime = nil
+
+closeBtn.InputBegan:Connect(function(inputObject)
+    if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+        buttonHoldStartTime = tick()
+    end
+end)
+
+closeBtn.InputEnded:Connect(function(inputObject)
+    if inputObject.UserInputType == Enum.UserInputType.MouseButton1 and buttonHoldStartTime then
+        local holdDuration = tick() - buttonHoldStartTime
+        if holdDuration >= closeHoldTime then
+            -- Afficher la fenêtre de confirmation
+            confirmCloseFrame.Visible = true
+        else
+            -- Comportement normal du bouton de fermeture
+            closeFrame(frame)
+            reopenBtn.Visible = true
+        end
+        buttonHoldStartTime = nil
+    end
 end)
 
 reopenBtn.MouseButton1Click:Connect(function()
@@ -456,6 +476,58 @@ spawn(function()
             wait(0.02)
         end
     end
+end)
+
+-- =========================
+-- FENETRE DE CONFIRMATION
+-- =========================
+local confirmCloseFrame = Instance.new("Frame", gui)
+confirmCloseFrame.Size = UDim2.new(0, 280, 0, 150)
+confirmCloseFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+confirmCloseFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+confirmCloseFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+confirmCloseFrame.Visible = false
+confirmCloseFrame.ZIndex = 10
+Instance.new("UICorner", confirmCloseFrame).CornerRadius = UDim.new(0, 15)
+Instance.new("UIStroke", confirmCloseFrame).Color = Color3.fromRGB(255, 50, 50)
+Instance.new("UIStroke", confirmCloseFrame).Thickness = 2
+
+local confirmLabel = Instance.new("TextLabel", confirmCloseFrame)
+confirmLabel.Size = UDim2.new(1, -20, 0, 50)
+confirmLabel.Position = UDim2.new(0, 10, 0, 10)
+confirmLabel.Text = "Voulez-vous fermer le mod entier ?"
+confirmLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+confirmLabel.Font = Enum.Font.GothamBold
+confirmLabel.TextSize = 18
+confirmLabel.TextWrapped = true
+confirmLabel.BackgroundTransparency = 1
+
+local yesBtn = Instance.new("TextButton", confirmCloseFrame)
+yesBtn.Size = UDim2.new(0, 100, 0, 35)
+yesBtn.Position = UDim2.new(0.5, -110, 0.7, 0)
+yesBtn.Text = "Oui"
+yesBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+yesBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+yesBtn.Font = Enum.Font.GothamBold
+yesBtn.TextSize = 20
+Instance.new("UICorner", yesBtn).CornerRadius = UDim.new(0, 8)
+
+local noBtn = Instance.new("TextButton", confirmCloseFrame)
+noBtn.Size = UDim2.new(0, 100, 0, 35)
+noBtn.Position = UDim2.new(0.5, 10, 0.7, 0)
+noBtn.Text = "Non"
+noBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+noBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+noBtn.Font = Enum.Font.GothamBold
+noBtn.TextSize = 20
+Instance.new("UICorner", noBtn).CornerRadius = UDim.new(0, 8)
+
+yesBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+noBtn.MouseButton1Click:Connect(function()
+    confirmCloseFrame.Visible = false
 end)
 
 -- =========================
