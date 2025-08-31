@@ -428,28 +428,36 @@ gameSetBtn.MouseButton1Click:Connect(function()
     gamePage.Visible = true
 end)
 
--- Nouvelle logique pour le bouton de fermeture
+local closeIsHolding = false
 local closeHoldTime = 3 -- Temps en secondes pour activer la confirmation
-local buttonHoldStartTime = nil
 
 closeBtn.InputBegan:Connect(function(inputObject)
     if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-        buttonHoldStartTime = tick()
+        closeIsHolding = true
+        coroutine.wrap(function()
+            local startTime = tick()
+            while closeIsHolding and tick() - startTime < closeHoldTime do
+                wait(0.1)
+            end
+            if closeIsHolding then
+                -- Afficher la fenêtre de confirmation
+                confirmCloseFrame.Visible = true
+                closeIsHolding = false
+            end
+        end)()
     end
 end)
 
 closeBtn.InputEnded:Connect(function(inputObject)
-    if inputObject.UserInputType == Enum.UserInputType.MouseButton1 and buttonHoldStartTime then
-        local holdDuration = tick() - buttonHoldStartTime
-        if holdDuration >= closeHoldTime then
-            -- Afficher la fenêtre de confirmation
-            confirmCloseFrame.Visible = true
-        else
-            -- Comportement normal du bouton de fermeture
-            closeFrame(frame)
-            reopenBtn.Visible = true
+    if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+        if closeIsHolding then
+            closeIsHolding = false
+            if not confirmCloseFrame.Visible then
+                -- Comportement normal du bouton de fermeture
+                closeFrame(frame)
+                reopenBtn.Visible = true
+            end
         end
-        buttonHoldStartTime = nil
     end
 end)
 
