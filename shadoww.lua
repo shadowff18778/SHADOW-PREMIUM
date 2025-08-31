@@ -423,10 +423,10 @@ hackBtn.MouseButton1Click:Connect(function()
     hackPage.Visible = true
 end)
 
--- NOUVEAU : Bouton pour la page graphique (Graph)
+-- Bouton pour la page graphique (Graph)
 local graphBtn = Instance.new("TextButton", settingsPage)
 graphBtn.Size = UDim2.new(0,180,0,35)
-graphBtn.Position = UDim2.new(0.5,-90,0.65,0) -- Nouvelle position, en dessous du bouton Hacks
+graphBtn.Position = UDim2.new(0.5,-90,0.65,0)
 graphBtn.Text = "Graph"
 graphBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
 graphBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -434,6 +434,8 @@ graphBtn.Font = Enum.Font.GothamBold
 graphBtn.TextSize = 20
 Instance.new("UICorner", graphBtn).CornerRadius = UDim.new(0,10)
 Instance.new("UIStroke", graphBtn).Color = Color3.fromRGB(255,50,50)
+-- On le cache ici
+graphBtn.Visible = false
 
 -- NOUVEAU : Page graphique
 local graphPage = Instance.new("Frame", frame)
@@ -975,7 +977,7 @@ createHackButton("Spectateur", "spectatingEnabled", function(state)
         end
     else
         -- On quitte le mode spectateur
-        if cameraConnection then cameraConnection:Disconnect() end
+        if cameraConnection then cameraConnection:Disconnect() then end
         camera.CameraType = Enum.CameraType.Custom
         stopSpectatorNameAnimation()
     end
@@ -1082,6 +1084,56 @@ RS.Heartbeat:Connect(function()
         end
     end
 end)
+
+-- NOUVEAU: Compte à rebours
+local updateCountdown = Instance.new("Frame", gui)
+updateCountdown.Size = UDim2.new(0, 180, 0, 80)
+updateCountdown.Position = UDim2.new(1, 10, 0.5, -40)
+updateCountdown.BackgroundColor3 = Color3.fromRGB(15,15,15)
+Instance.new("UICorner", updateCountdown).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", updateCountdown).Color = Color3.fromRGB(255, 50, 50)
+updateCountdown.Visible = true
+
+local updateTitle = Instance.new("TextLabel", updateCountdown)
+updateTitle.Size = UDim2.new(1,0,0.5,0)
+updateTitle.Position = UDim2.new(0,0,0,0)
+updateTitle.Text = "Mise à jour dans :"
+updateTitle.TextColor3 = Color3.fromRGB(255,255,255)
+updateTitle.Font = Enum.Font.GothamBold
+updateTitle.TextSize = 16
+updateTitle.BackgroundTransparency = 1
+
+local countdownLabel = Instance.new("TextLabel", updateCountdown)
+countdownLabel.Size = UDim2.new(1,0,0.5,0)
+countdownLabel.Position = UDim2.new(0,0,0.5,0)
+countdownLabel.Text = "00:00:00"
+countdownLabel.TextColor3 = Color3.fromRGB(255,50,50)
+countdownLabel.Font = Enum.Font.GothamBold
+countdownLabel.TextSize = 24
+countdownLabel.BackgroundTransparency = 1
+
+RS.Heartbeat:Connect(function()
+    local currentTime = os.time()
+    local today = os.date("*t", currentTime)
+    local updateTime = os.time({year = today.year, month = today.month, day = today.day, hour = 21, min = 0, sec = 0})
+
+    if currentTime > updateTime then
+        updateTime = updateTime + 24 * 60 * 60 -- Ajoute 24 heures pour le jour suivant
+    end
+    
+    local remainingSeconds = updateTime - currentTime
+    
+    local hours = math.floor(remainingSeconds / 3600)
+    local minutes = math.floor((remainingSeconds % 3600) / 60)
+    local seconds = remainingSeconds % 60
+    
+    local hoursStr = string.format("%02d", hours)
+    local minutesStr = string.format("%02d", minutes)
+    local secondsStr = string.format("%02d", seconds)
+    
+    countdownLabel.Text = hoursStr..":"..minutesStr..":"..secondsStr
+end)
+
 
 local function animateColor(textLabel)
     spawn(function()
