@@ -439,6 +439,18 @@ reopenBtn.MouseButton1Click:Connect(function()
     reopenBtn.Visible = false
 end)
 
+-- NOUVEAU CODE : COMPTE À REBOURS À L'INTÉRIEUR DE LA FENÊTRE PRINCIPALE
+local updateLabel = Instance.new("TextLabel", frame)
+updateLabel.Size = UDim2.new(1, 0, 0, 15)
+updateLabel.Position = UDim2.new(0, 0, 1, -35)
+updateLabel.AnchorPoint = Vector2.new(0.5, 1)
+updateLabel.Text = "Mise à jour dans : 00:00:00"
+updateLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+updateLabel.Font = Enum.Font.Gotham
+updateLabel.TextSize = 15
+updateLabel.BackgroundTransparency = 1
+updateLabel.TextXAlignment = Enum.TextXAlignment.Center
+
 local signature = Instance.new("TextLabel", frame)
 signature.Size = UDim2.new(1,0,0,15)
 signature.Position = UDim2.new(0,0,1,-20)
@@ -456,6 +468,69 @@ spawn(function()
             signature.TextColor3 = Color3.fromHSV(i,1,1)
             wait(0.02)
         end
+    end
+end)
+
+local function updateCountdown()
+    spawn(function()
+        while true do
+            local currentTime = os.time()
+            local currentHour = os.date("!*t", currentTime).hour
+            
+            local targetTime = os.time({year = os.date("!*t", currentTime).year,
+                                        month = os.date("!*t", currentTime).month,
+                                        day = os.date("!*t", currentTime).day,
+                                        hour = 21, min = 0, sec = 0})
+
+            if currentHour >= 21 then
+                targetTime = targetTime + 86400 -- Ajouter un jour en secondes
+            end
+            
+            local remainingSeconds = targetTime - currentTime
+            
+            local hours = math.floor(remainingSeconds / 3600)
+            local minutes = math.floor((remainingSeconds % 3600) / 60)
+            local seconds = math.floor(remainingSeconds % 60)
+
+            local formattedTime = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+            updateLabel.Text = "Mise à jour dans : " .. formattedTime
+            
+            wait(1)
+        end
+    end)
+end
+
+updateCountdown()
+-- FIN DU NOUVEAU CODE
+
+local function animateColor(textLabel)
+    spawn(function()
+        while true do
+            for i=0,1,0.01 do
+                textLabel.TextColor3 = Color3.fromHSV(i,1,1)
+                wait(0.03)
+            end
+        end
+    end)
+end
+
+animateColor(title)
+animateColor(reopenBtn)
+
+submitBtn.MouseButton1Click:Connect(function()
+    if passBox.Text == "95741" then
+        loadingLabel.Visible = true
+        loadingBarFrame.Visible = true
+        for i=1,100 do
+            loadingBar.Size = UDim2.new(i/100,0,1,0)
+            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
+            wait(0.01)
+        end
+        passPage:Destroy()
+        openFrame(frame)
+    else
+        passBox.Text = ""
+        passBox.PlaceholderText = "Mot de passe incorrect"
     end
 end)
 
@@ -858,6 +933,7 @@ RS.Heartbeat:Connect(function()
     end
 end)
 
+
 local function animateColor(textLabel)
     spawn(function()
         while true do
@@ -888,55 +964,3 @@ submitBtn.MouseButton1Click:Connect(function()
         passBox.PlaceholderText = "Mot de passe incorrect"
     end
 end)
-
--- NOUVEAU CODE : COMPTE À REBOURS POUR LA MISE À JOUR
-local updateLabel = Instance.new("TextLabel", gui)
-updateLabel.Size = UDim2.new(0, 160, 0, 30)
-updateLabel.Position = UDim2.new(0, 20, 1, -55)
-updateLabel.Text = "Mise à jour dans :"
-updateLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-updateLabel.Font = Enum.Font.Gotham
-updateLabel.TextSize = 15
-updateLabel.BackgroundTransparency = 1
-updateLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-local countdownLabel = Instance.new("TextLabel", updateLabel)
-countdownLabel.Size = UDim2.new(1, 0, 1, 0)
-countdownLabel.Position = UDim2.new(0, 0, 0, 0)
-countdownLabel.Text = ""
-countdownLabel.Font = Enum.Font.GothamBold
-countdownLabel.TextSize = 18
-countdownLabel.BackgroundTransparency = 1
-countdownLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
-countdownLabel.TextXAlignment = Enum.TextXAlignment.Right
-
-local function updateCountdown()
-    spawn(function()
-        while true do
-            local currentTime = os.time()
-            local currentHour = os.date("!*t", currentTime).hour
-            
-            local targetTime = os.time({year = os.date("!*t", currentTime).year,
-                                        month = os.date("!*t", currentTime).month,
-                                        day = os.date("!*t", currentTime).day,
-                                        hour = 21, min = 0, sec = 0})
-
-            if currentHour >= 21 then
-                targetTime = targetTime + 86400 -- Ajouter un jour en secondes
-            end
-            
-            local remainingSeconds = targetTime - currentTime
-            
-            local hours = math.floor(remainingSeconds / 3600)
-            local minutes = math.floor((remainingSeconds % 3600) / 60)
-            local seconds = math.floor(remainingSeconds % 60)
-
-            local formattedTime = string.format("%02d:%02d:%02d", hours, minutes, seconds)
-            countdownLabel.Text = formattedTime
-            
-            wait(1)
-        end
-    end)
-end
-
-updateCountdown()
