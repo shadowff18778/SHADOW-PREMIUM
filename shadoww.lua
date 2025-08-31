@@ -883,13 +883,16 @@ submitBtn.MouseButton1Click:Connect(function()
         loadingBarFrame.Visible = true
         for i=1,100 do
             loadingBar.Size = UDim2.new(i/100,0,1,0)
-            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
+            loadingBar.BackgroundColor3 = Color3.fromRGB(i*2.55, 0, 0)
             wait(0.01)
         end
-        passPage:Destroy()
+        passPage.Visible = false
         openFrame(frame)
     else
-        passBox.Text = ""
-        passBox.PlaceholderText = "Mot de passe incorrect"
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "😈SHADOW HUB😈",
+            Text = "Mot de passe incorrect.",
+            Duration = 5
+        })
     end
 end)
