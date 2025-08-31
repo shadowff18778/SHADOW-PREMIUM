@@ -1,5 +1,3 @@
-
-
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
     Text = "chargement... 😈",
@@ -472,6 +470,7 @@ _G.killAuraEnabled = false
 _G.nameViewEnabled = false
 _G.trackerEnabled = false
 _G.spectatingEnabled = false
+_G.graphEnabled = false -- Nouveau : Variable pour le bouton GRAPH
 
 local buttonYMain = 0.1
 local spacing = 0.18
@@ -607,6 +606,15 @@ createButton("Noclip", mainPage, "noclip", function(state)
             end
         end
     end)
+end, buttonYMain)
+buttonYMain = buttonYMain + spacing
+
+-- NOUVEAU: Bouton pour afficher le profil
+createButton("Profil", mainPage, "showProfile", function(state)
+    mainPage.Visible = false
+    settingsBtn.Visible = false
+    backArrowBtn.Visible = true
+    profilePage.Visible = true
 end, buttonYMain)
 buttonYMain = buttonYMain + spacing
 
@@ -780,6 +788,68 @@ end)
 
 --- FIN DU NOUVEAU BOUTON SPECTATEUR ---
 
+-- NOUVEAU: Page de profil
+local profilePage = Instance.new("Frame", frame)
+profilePage.Size = UDim2.new(1,0,1,-45)
+profilePage.Position = UDim2.new(0,0,0,45)
+profilePage.BackgroundTransparency = 1
+local profileGradient = Instance.new("UIGradient", profilePage)
+profileGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+profilePage.Visible = false
+
+local profileTitle = Instance.new("TextLabel", profilePage)
+profileTitle.Size = UDim2.new(1,-40,0,50)
+profileTitle.Position = UDim2.new(0,20,0,20)
+profileTitle.Text = "MON PROFIL"
+profileTitle.TextColor3 = Color3.fromRGB(255,50,50)
+profileTitle.Font = Enum.Font.GothamBold
+profileTitle.TextSize = 26
+profileTitle.BackgroundTransparency = 1
+
+local playerHeadShot = Instance.new("ImageLabel", profilePage)
+playerHeadShot.Size = UDim2.new(0, 100, 0, 100)
+playerHeadShot.Position = UDim2.new(0.5, -50, 0.3, 0)
+playerHeadShot.BackgroundTransparency = 1
+Instance.new("UICorner", playerHeadShot).CornerRadius = UDim.new(0, 50)
+
+local playerNameLabel = Instance.new("TextLabel", profilePage)
+playerNameLabel.Size = UDim2.new(1, -40, 0, 30)
+playerNameLabel.Position = UDim2.new(0.5, -140, 0.55, 0)
+playerNameLabel.Text = "Nom: " .. player.Name
+playerNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerNameLabel.Font = Enum.Font.GothamBold
+playerNameLabel.TextSize = 20
+playerNameLabel.BackgroundTransparency = 1
+
+local playerIDLabel = Instance.new("TextLabel", profilePage)
+playerIDLabel.Size = UDim2.new(1, -40, 0, 20)
+playerIDLabel.Position = UDim2.new(0.5, -140, 0.65, 0)
+playerIDLabel.Text = "ID: " .. player.UserId
+playerIDLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+playerIDLabel.Font = Enum.Font.Gotham
+playerIDLabel.TextSize = 16
+playerIDLabel.BackgroundTransparency = 1
+
+-- Remplir l'image de profil
+spawn(function()
+    local success, url = pcall(function()
+        return game.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+    if success then
+        playerHeadShot.Image = url
+    end
+end)
+
+-- NOUVEAU: Bouton pour les paramètres "GRAPH"
+local buttonYSettings = 0.2
+createButton("GRAPH", settingsPage, "graphEnabled", function(state)
+    -- Logique pour le bouton GRAPH - il n'y a pas de fonction spécifique demandée, donc c'est un simple toggle.
+    if state then
+        print("Mode GRAPH activé.")
+    else
+        print("Mode GRAPH désactivé.")
+    end
+end, buttonYSettings + spacing * 2)
 
 -- LOGIQUE GLOBALE DANS UNE BOUCLE
 RS.Heartbeat:Connect(function()
@@ -880,13 +950,18 @@ submitBtn.MouseButton1Click:Connect(function()
         loadingBarFrame.Visible = true
         for i=1,100 do
             loadingBar.Size = UDim2.new(i/100,0,1,0)
-            loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
+            loadingBar.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
             wait(0.01)
         end
         passPage:Destroy()
+        frame.Visible = true
         openFrame(frame)
     else
         passBox.Text = ""
-        passBox.PlaceholderText = "Mot de passe incorrect"
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "😈SHADOW HUB😈",
+            Text = "Mot de passe incorrect",
+            Duration = 3
+        })
     end
 end)
