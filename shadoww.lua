@@ -488,6 +488,80 @@ lightBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- NOUVEAU : Bouton pour Wallhack (tracer les joueurs)
+local wallhackBtn = Instance.new("TextButton", graphPage)
+wallhackBtn.Size = UDim2.new(0,180,0,35)
+wallhackBtn.Position = UDim2.new(0.5,-90,0.45,0)
+wallhackBtn.Text = "Wallhack: OFF"
+wallhackBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+wallhackBtn.TextColor3 = Color3.fromRGB(255,255,255)
+wallhackBtn.Font = Enum.Font.GothamBold
+wallhackBtn.TextSize = 20
+Instance.new("UICorner", wallhackBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", wallhackBtn).Color = Color3.fromRGB(255,50,50)
+
+_G.wallhackEnabled = false
+local wallhackConnection = nil
+local playerMarkers = {} -- Table pour stocker les BillboardGui
+
+wallhackBtn.MouseButton1Click:Connect(function()
+    _G.wallhackEnabled = not _G.wallhackEnabled
+    if _G.wallhackEnabled then
+        wallhackBtn.Text = "Wallhack: ON"
+        wallhackBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        
+        -- Démarrer la boucle de mise à jour pour le wallhack
+        wallhackConnection = RS.Heartbeat:Connect(function()
+            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+                if targetPlayer.Name ~= player.Name and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    if not playerMarkers[targetPlayer] then
+                        local tag = Instance.new("BillboardGui")
+                        tag.Adornee = targetPlayer.Character:FindFirstChild("Head") or targetPlayer.Character.HumanoidRootPart
+                        tag.AlwaysOnTop = true
+                        tag.Size = UDim2.new(0, 50, 0, 50)
+                        tag.ExtentsOffset = Vector3.new(0, 5, 0) -- Décalage pour être au-dessus de la tête
+                        tag.Parent = targetPlayer.Character
+
+                        local stroke = Instance.new("UIStroke")
+                        stroke.Color = Color3.fromRGB(255, 0, 0)
+                        stroke.Thickness = 5
+                        stroke.Parent = tag
+                        
+                        -- Pour la ligne de contour
+                        local tracerFrame = Instance.new("Frame", tag)
+                        tracerFrame.Size = UDim2.new(1,0,1,0)
+                        tracerFrame.BackgroundTransparency = 1
+
+                        local uStroke = Instance.new("UIStroke", tracerFrame)
+                        uStroke.Color = Color3.fromRGB(255, 0, 0)
+                        uStroke.Thickness = 5
+                        uStroke.Transparency = 0.5
+                        
+                        playerMarkers[targetPlayer] = tag
+                    end
+                else
+                    if playerMarkers[targetPlayer] then
+                        playerMarkers[targetPlayer]:Destroy()
+                        playerMarkers[targetPlayer] = nil
+                    end
+                end
+            end
+        end)
+
+    else
+        wallhackBtn.Text = "Wallhack: OFF"
+        wallhackBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        if wallhackConnection then
+            wallhackConnection:Disconnect()
+            wallhackConnection = nil
+        end
+        for _, tag in pairs(playerMarkers) do
+            tag:Destroy()
+        end
+        playerMarkers = {}
+    end
+end)
+
 -- NOUVEAU : Page de profil
 local profilePage = Instance.new("Frame", frame)
 profilePage.Size = UDim2.new(1,0,1,-45)
