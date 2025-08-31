@@ -279,17 +279,6 @@ local function createPlayerButtons()
     playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
 end
 
-infoBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    infoPage.Visible = true
-    spawn(function()
-        while infoPage.Visible do
-            createPlayerButtons()
-            wait(1)
-        end
-    end)
-end)
-
 local gameSetBtn = Instance.new("TextButton", settingsPage)
 gameSetBtn.Size = UDim2.new(0,180,0,35)
 gameSetBtn.Position = UDim2.new(0.5,-90,0.35,0)
@@ -1067,6 +1056,7 @@ animateColor(title)
 animateColor(reopenBtn)
 
 submitBtn.MouseButton1Click:Connect(function()
+    -- Correction ici : utiliser trim() pour enlever les espaces
     if passBox.Text:trim() == "95741" then
         loadingLabel.Visible = true
         loadingBarFrame.Visible = true
