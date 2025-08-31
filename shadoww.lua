@@ -1,3 +1,4 @@
+-- Initialisation de l'interface utilisateur et des services
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
     Text = "chargement... 😈",
@@ -118,7 +119,8 @@ header.Size = UDim2.new(1,0,0,45)
 header.BackgroundColor3 = Color3.fromRGB(15,15,15)
 Instance.new("UICorner", header).CornerRadius = UDim.new(0,15)
 
-local title = Instance.new("TextLabel", header)
+-- Le titre est maintenant un TextButton pour le clic
+local title = Instance.new("TextButton", header)
 title.Size = UDim2.new(1,-90,1,0)
 title.Position = UDim2.new(0,50,0,0)
 title.Text = "SHADOW HUB"
@@ -126,6 +128,24 @@ title.TextColor3 = Color3.fromRGB(255,0,0)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 28
 title.BackgroundTransparency = 1
+-- Les propriétés suivantes sont essentielles pour qu'il agisse comme un bouton
+title.TextScaled = false
+-- Correction: S'assurer que le bouton est cliquable et au-dessus des autres éléments
+title.Active = true
+title.ZIndex = 2
+
+-- LOGIQUE MISE À JOUR : Quand on clique sur le titre, on va sur la page de profil
+title.MouseButton1Click:Connect(function()
+    mainPage.Visible = false
+    settingsPage.Visible = false
+    infoPage.Visible = false
+    gamePage.Visible = false
+    hackPage.Visible = false
+    graphPage.Visible = false
+    profilePage.Visible = true
+    backArrowBtn.Visible = true
+    settingsBtn.Visible = false
+end)
 
 local settingsBtn = Instance.new("TextButton", header)
 settingsBtn.Size = UDim2.new(0,35,0,35)
@@ -403,11 +423,214 @@ hackBtn.MouseButton1Click:Connect(function()
     hackPage.Visible = true
 end)
 
+-- NOUVEAU : Bouton pour la page graphique (Graph)
+local graphBtn = Instance.new("TextButton", settingsPage)
+graphBtn.Size = UDim2.new(0,180,0,35)
+graphBtn.Position = UDim2.new(0.5,-90,0.65,0) -- Nouvelle position, en dessous du bouton Hacks
+graphBtn.Text = "Graph"
+graphBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+graphBtn.TextColor3 = Color3.fromRGB(255,255,255)
+graphBtn.Font = Enum.Font.GothamBold
+graphBtn.TextSize = 20
+Instance.new("UICorner", graphBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", graphBtn).Color = Color3.fromRGB(255,50,50)
+
+-- NOUVEAU : Page graphique
+local graphPage = Instance.new("Frame", frame)
+graphPage.Size = UDim2.new(1,0,1,-45)
+graphPage.Position = UDim2.new(0,0,0,45)
+graphPage.BackgroundTransparency = 1
+local graphGradient = Instance.new("UIGradient", graphPage)
+graphGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+graphPage.Visible = false
+
+-- NOUVEAU : Logique d'ouverture de la page graphique
+graphBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    graphPage.Visible = true
+end)
+
+-- NOUVEAU : Bouton de lumière dans la page graphique
+local lightBtn = Instance.new("TextButton", graphPage)
+lightBtn.Size = UDim2.new(0,180,0,35)
+lightBtn.Position = UDim2.new(0.5,-90,0.3,0)
+lightBtn.Text = "Lumière: OFF"
+lightBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+lightBtn.TextColor3 = Color3.fromRGB(255,255,255)
+lightBtn.Font = Enum.Font.GothamBold
+lightBtn.TextSize = 20
+Instance.new("UICorner", lightBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", lightBtn).Color = Color3.fromRGB(255,50,50)
+
+local playerLight = nil -- Variable pour stocker la lumière
+_G.lightEnabled = false -- Variable globale pour suivre l'état de la lumière
+
+lightBtn.MouseButton1Click:Connect(function()
+    _G.lightEnabled = not _G.lightEnabled
+    if _G.lightEnabled then
+        -- Crée une nouvelle lumière si elle n'existe pas
+        if not playerLight then
+            playerLight = Instance.new("PointLight", character.HumanoidRootPart)
+            playerLight.Brightness = 5
+            playerLight.Range = 60
+            playerLight.Color = Color3.new(1, 1, 1) -- Lumière blanche
+        end
+        lightBtn.Text = "Lumière: ON"
+        lightBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+    else
+        -- Détruit la lumière si elle est activée
+        if playerLight then
+            playerLight:Destroy()
+            playerLight = nil
+        end
+        lightBtn.Text = "Lumière: OFF"
+        lightBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    end
+end)
+
+-- NOUVEAU : Bouton pour Wallhack (tracer les joueurs)
+local wallhackBtn = Instance.new("TextButton", graphPage)
+wallhackBtn.Size = UDim2.new(0,180,0,35)
+wallhackBtn.Position = UDim2.new(0.5,-90,0.45,0)
+wallhackBtn.Text = "Wallhack: OFF"
+wallhackBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+wallhackBtn.TextColor3 = Color3.fromRGB(255,255,255)
+wallhackBtn.Font = Enum.Font.GothamBold
+wallhackBtn.TextSize = 20
+Instance.new("UICorner", wallhackBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", wallhackBtn).Color = Color3.fromRGB(255,50,50)
+
+_G.wallhackEnabled = false
+local wallhackConnection = nil
+local playerMarkers = {} -- Table pour stocker les BillboardGui
+
+wallhackBtn.MouseButton1Click:Connect(function()
+    _G.wallhackEnabled = not _G.wallhackEnabled
+    if _G.wallhackEnabled then
+        wallhackBtn.Text = "Wallhack: ON"
+        wallhackBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        
+        -- Démarrer la boucle de mise à jour pour le wallhack
+        wallhackConnection = RS.Heartbeat:Connect(function()
+            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+                if targetPlayer.Name ~= player.Name and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    if not playerMarkers[targetPlayer] then
+                        local tag = Instance.new("BillboardGui")
+                        tag.Adornee = targetPlayer.Character:FindFirstChild("Head") or targetPlayer.Character.HumanoidRootPart
+                        tag.AlwaysOnTop = true
+                        tag.Size = UDim2.new(0, 50, 0, 50)
+                        tag.ExtentsOffset = Vector3.new(0, 5, 0) -- Décalage pour être au-dessus de la tête
+                        tag.Parent = targetPlayer.Character
+
+                        local stroke = Instance.new("UIStroke")
+                        stroke.Color = Color3.fromRGB(255, 0, 0)
+                        stroke.Thickness = 5
+                        stroke.Parent = tag
+                        
+                        -- Pour la ligne de contour
+                        local tracerFrame = Instance.new("Frame", tag)
+                        tracerFrame.Size = UDim2.new(1,0,1,0)
+                        tracerFrame.BackgroundTransparency = 1
+
+                        local uStroke = Instance.new("UIStroke", tracerFrame)
+                        uStroke.Color = Color3.fromRGB(255, 0, 0)
+                        uStroke.Thickness = 5
+                        uStroke.Transparency = 0.5
+                        
+                        playerMarkers[targetPlayer] = tag
+                    end
+                else
+                    if playerMarkers[targetPlayer] then
+                        playerMarkers[targetPlayer]:Destroy()
+                        playerMarkers[targetPlayer] = nil
+                    end
+                end
+            end
+        end)
+
+    else
+        wallhackBtn.Text = "Wallhack: OFF"
+        wallhackBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        if wallhackConnection then
+            wallhackConnection:Disconnect()
+            wallhackConnection = nil
+        end
+        for _, tag in pairs(playerMarkers) do
+            tag:Destroy()
+        end
+        playerMarkers = {}
+    end
+end)
+
+-- NOUVEAU : Page de profil
+local profilePage = Instance.new("Frame", frame)
+profilePage.Size = UDim2.new(1,0,1,-45)
+profilePage.Position = UDim2.new(0,0,0,45)
+profilePage.BackgroundTransparency = 1
+local profileGradient = Instance.new("UIGradient", profilePage)
+profileGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+profilePage.Visible = false
+
+-- NOUVEAU : UI du profil
+local profileImage = Instance.new("ImageLabel", profilePage)
+profileImage.Size = UDim2.new(0,100,0,100)
+profileImage.Position = UDim2.new(0.5, -50, 0.2, 0)
+profileImage.BackgroundTransparency = 1
+profileImage.BorderSizePixel = 0
+Instance.new("UICorner", profileImage).CornerRadius = UDim.new(0.5, 0)
+local profileImageStroke = Instance.new("UIStroke", profileImage)
+profileImageStroke.Color = Color3.fromRGB(255, 50, 50)
+profileImageStroke.Thickness = 2
+
+local profileNameLabel = Instance.new("TextLabel", profilePage)
+profileNameLabel.Size = UDim2.new(1, -40, 0, 30)
+profileNameLabel.Position = UDim2.new(0, 20, 0.5, 0)
+profileNameLabel.BackgroundTransparency = 1
+profileNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+profileNameLabel.Font = Enum.Font.GothamBold
+profileNameLabel.TextSize = 22
+profileNameLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local profileIdLabel = Instance.new("TextLabel", profilePage)
+profileIdLabel.Size = UDim2.new(1, -40, 0, 20)
+profileIdLabel.Position = UDim2.new(0, 20, 0.6, 0)
+profileIdLabel.BackgroundTransparency = 1
+profileIdLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+profileIdLabel.Font = Enum.Font.Gotham
+profileIdLabel.TextSize = 16
+profileIdLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local profileAgeLabel = Instance.new("TextLabel", profilePage)
+profileAgeLabel.Size = UDim2.new(1, -40, 0, 20)
+profileAgeLabel.Position = UDim2.new(0, 20, 0.7, 0)
+profileAgeLabel.BackgroundTransparency = 1
+profileAgeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+profileAgeLabel.Font = Enum.Font.Gotham
+profileAgeLabel.TextSize = 16
+profileAgeLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+
+-- Logique pour remplir les informations de profil
+spawn(function()
+    local userId = player.UserId
+    local success, url = pcall(function()
+        return game.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+    if success then
+        profileImage.Image = url
+    end
+    profileNameLabel.Text = player.Name
+    profileIdLabel.Text = "ID: " .. userId
+    profileAgeLabel.Text = "Ancienneté: " .. player.AccountAge .. " jours"
+end)
+
+
 settingsBtn.MouseButton1Click:Connect(function()
     settingsBtn.Visible = false
     backArrowBtn.Visible = true
     settingsPage.Visible = true
     mainPage.Visible = false
+    profilePage.Visible = false
 end)
 
 backArrowBtn.MouseButton1Click:Connect(function()
@@ -417,6 +640,8 @@ backArrowBtn.MouseButton1Click:Connect(function()
     infoPage.Visible = false
     gamePage.Visible = false
     hackPage.Visible = false
+    graphPage.Visible = false
+    profilePage.Visible = false
     mainPage.Visible = true
 end)
 
@@ -438,18 +663,6 @@ reopenBtn.MouseButton1Click:Connect(function()
     openFrame(frame)
     reopenBtn.Visible = false
 end)
-
--- NOUVEAU : Compte à rebours avant 21h00
-local countdownLabel = Instance.new("TextLabel", frame)
-countdownLabel.Size = UDim2.new(1,0,0,15)
-countdownLabel.Position = UDim2.new(0,0,1,-35) -- Positionné juste au-dessus de la signature
-countdownLabel.Text = "Prochain événement à 21h00"
-countdownLabel.Font = Enum.Font.GothamBold
-countdownLabel.TextSize = 12
-countdownLabel.TextColor3 = Color3.fromRGB(255,255,255)
-countdownLabel.BackgroundTransparency = 1
-countdownLabel.TextScaled = false
-countdownLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 local signature = Instance.new("TextLabel", frame)
 signature.Size = UDim2.new(1,0,0,15)
@@ -880,45 +1093,6 @@ local function animateColor(textLabel)
         end
     end)
 end
-
--- Tâches de mise à jour en arrière-plan
-spawn(function()
-    while wait(1) do
-        local now = os.date("!*t", os.time())
-        local targetHour = 21
-        local targetTime
-        
-        -- Si l'heure actuelle est après 21h00, le prochain événement est demain
-        if now.hour >= targetHour then
-            targetTime = os.time({
-                year = now.year,
-                month = now.month,
-                day = now.day + 1,
-                hour = targetHour,
-                min = 0,
-                sec = 0
-            })
-        else
-            -- Sinon, c'est pour aujourd'hui
-            targetTime = os.time({
-                year = now.year,
-                month = now.month,
-                day = now.day,
-                hour = targetHour,
-                min = 0,
-                sec = 0
-            })
-        end
-        
-        local timeRemaining = targetTime - os.time()
-        
-        local hours = math.floor(timeRemaining / 3600)
-        local minutes = math.floor((timeRemaining % 3600) / 60)
-        local seconds = timeRemaining % 60
-        
-        countdownLabel.Text = string.format("Mise à jour dans : %02d:%02d:%02d", hours, minutes, seconds)
-    end
-end)
 
 animateColor(title)
 animateColor(reopenBtn)
