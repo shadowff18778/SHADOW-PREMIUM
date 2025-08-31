@@ -1,3 +1,20 @@
+--[[
+ * Ce script est conçu pour être utilisé sur Roblox, mais il doit être exécuté
+ * via un autre script de chargement qui le télécharge depuis GitHub.
+ *
+ * Pour que le menu apparaisse, assurez-vous que le script de chargement est
+ * bien fonctionnel et qu'il exécute ce code.
+ *
+ * Si le menu ne s'affiche toujours pas, vérifiez les points suivants:
+ * 1. Le mot de passe (95741) est-il correct?
+ * 2. Le script de chargement a-t-il bien exécuté ce code?
+ * 3. Y a-t-il des erreurs dans la console de développement de Roblox?
+ *
+ * Si vous rencontrez des problèmes, n'hésitez pas à me donner les erreurs
+ * affichées dans la console pour que je puisse vous aider à les résoudre.
+--]]
+
+-- Afficher une notification de chargement au lancement
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
     Text = "Chargement... 😈",
@@ -1022,8 +1039,8 @@ submitBtn.MouseButton1Click:Connect(function()
             loadingBar.BackgroundColor3 = Color3.fromHSV(i/100,1,1)
             wait(0.01)
         end
-        passPage.Visible = false
-        openFrame(frame)
+        passPage:Destroy()
+        frame.Visible = true
     else
         passBox.Text = ""
         passBox.PlaceholderText = "Mot de passe incorrect"
