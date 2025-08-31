@@ -1,6 +1,4 @@
--- Script Luau pour Roblox
-
--- Notifications de démarrage
+-- Initialisation de l'interface utilisateur et des services
 game.StarterGui:SetCore("SendNotification", {
     Title = "😈SHADOW HUB😈",
     Text = "chargement... 😈",
@@ -121,7 +119,7 @@ header.Size = UDim2.new(1,0,0,45)
 header.BackgroundColor3 = Color3.fromRGB(15,15,15)
 Instance.new("UICorner", header).CornerRadius = UDim.new(0,15)
 
--- Le titre est maintenant un TextButton pour pouvoir cliquer dessus
+-- Le titre est maintenant un TextButton pour le clic
 local title = Instance.new("TextButton", header)
 title.Size = UDim2.new(1,-90,1,0)
 title.Position = UDim2.new(0,50,0,0)
@@ -130,6 +128,19 @@ title.TextColor3 = Color3.fromRGB(255,0,0)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 28
 title.BackgroundTransparency = 1
+-- Les propriétés suivantes sont essentielles pour qu'il agisse comme un bouton
+title.TextScaled = false
+title.MouseButton1Click:Connect(function()
+    mainPage.Visible = false
+    settingsPage.Visible = false
+    infoPage.Visible = false
+    gamePage.Visible = false
+    hackPage.Visible = false
+    graphPage.Visible = false
+    profilePage.Visible = true
+    backArrowBtn.Visible = true
+    settingsBtn.Visible = false
+end)
 
 local settingsBtn = Instance.new("TextButton", header)
 settingsBtn.Size = UDim2.new(0,35,0,35)
@@ -173,7 +184,6 @@ reopenBtn.TextSize = 20
 reopenBtn.Visible = false
 Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(0,10)
 
--- Pages du menu
 local mainPage = Instance.new("Frame", frame)
 mainPage.Size = UDim2.new(1,0,1,-45)
 mainPage.Position = UDim2.new(0,0,0,45)
@@ -188,6 +198,17 @@ settingsPage.BackgroundTransparency = 1
 local settingsGradient = Instance.new("UIGradient", settingsPage)
 settingsGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
 settingsPage.Visible = false
+
+local infoBtn = Instance.new("TextButton", settingsPage)
+infoBtn.Size = UDim2.new(0,180,0,35)
+infoBtn.Position = UDim2.new(0.5,-90,0.2,0)
+infoBtn.Text = "Infos Joueurs"
+infoBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+infoBtn.TextColor3 = Color3.fromRGB(255,255,255)
+infoBtn.Font = Enum.Font.GothamBold
+infoBtn.TextSize = 20
+Instance.new("UICorner", infoBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", infoBtn).Color = Color3.fromRGB(255,50,50)
 
 local infoPage = Instance.new("Frame", frame)
 infoPage.Size = UDim2.new(1,0,1,-45)
@@ -278,6 +299,17 @@ local function createPlayerButtons()
 
     playerList.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y)
 end
+
+infoBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    infoPage.Visible = true
+    spawn(function()
+        while infoPage.Visible do
+            createPlayerButtons()
+            wait(1)
+        end
+    end)
+end)
 
 local gameSetBtn = Instance.new("TextButton", settingsPage)
 gameSetBtn.Size = UDim2.new(0,180,0,35)
@@ -386,11 +418,140 @@ hackBtn.MouseButton1Click:Connect(function()
     hackPage.Visible = true
 end)
 
+-- NOUVEAU : Bouton pour la page graphique (Graph)
+local graphBtn = Instance.new("TextButton", settingsPage)
+graphBtn.Size = UDim2.new(0,180,0,35)
+graphBtn.Position = UDim2.new(0.5,-90,0.65,0) -- Nouvelle position, en dessous du bouton Hacks
+graphBtn.Text = "Graph"
+graphBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+graphBtn.TextColor3 = Color3.fromRGB(255,255,255)
+graphBtn.Font = Enum.Font.GothamBold
+graphBtn.TextSize = 20
+Instance.new("UICorner", graphBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", graphBtn).Color = Color3.fromRGB(255,50,50)
+
+-- NOUVEAU : Page graphique
+local graphPage = Instance.new("Frame", frame)
+graphPage.Size = UDim2.new(1,0,1,-45)
+graphPage.Position = UDim2.new(0,0,0,45)
+graphPage.BackgroundTransparency = 1
+local graphGradient = Instance.new("UIGradient", graphPage)
+graphGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+graphPage.Visible = false
+
+-- NOUVEAU : Logique d'ouverture de la page graphique
+graphBtn.MouseButton1Click:Connect(function()
+    settingsPage.Visible = false
+    graphPage.Visible = true
+end)
+
+-- NOUVEAU : Bouton de lumière dans la page graphique
+local lightBtn = Instance.new("TextButton", graphPage)
+lightBtn.Size = UDim2.new(0,180,0,35)
+lightBtn.Position = UDim2.new(0.5,-90,0.3,0)
+lightBtn.Text = "Lumière: OFF"
+lightBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+lightBtn.TextColor3 = Color3.fromRGB(255,255,255)
+lightBtn.Font = Enum.Font.GothamBold
+lightBtn.TextSize = 20
+Instance.new("UICorner", lightBtn).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", lightBtn).Color = Color3.fromRGB(255,50,50)
+
+local playerLight = nil -- Variable pour stocker la lumière
+_G.lightEnabled = false -- Variable globale pour suivre l'état de la lumière
+
+lightBtn.MouseButton1Click:Connect(function()
+    _G.lightEnabled = not _G.lightEnabled
+    if _G.lightEnabled then
+        -- Crée une nouvelle lumière si elle n'existe pas
+        if not playerLight then
+            playerLight = Instance.new("PointLight", character.HumanoidRootPart)
+            playerLight.Brightness = 5
+            playerLight.Range = 60
+            playerLight.Color = Color3.new(1, 1, 1) -- Lumière blanche
+        end
+        lightBtn.Text = "Lumière: ON"
+        lightBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+    else
+        -- Détruit la lumière si elle est activée
+        if playerLight then
+            playerLight:Destroy()
+            playerLight = nil
+        end
+        lightBtn.Text = "Lumière: OFF"
+        lightBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    end
+end)
+
+-- NOUVEAU : Page de profil
+local profilePage = Instance.new("Frame", frame)
+profilePage.Size = UDim2.new(1,0,1,-45)
+profilePage.Position = UDim2.new(0,0,0,45)
+profilePage.BackgroundTransparency = 1
+local profileGradient = Instance.new("UIGradient", profilePage)
+profileGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
+profilePage.Visible = false
+
+-- NOUVEAU : UI du profil
+local profileImage = Instance.new("ImageLabel", profilePage)
+profileImage.Size = UDim2.new(0,100,0,100)
+profileImage.Position = UDim2.new(0.5, -50, 0.2, 0)
+profileImage.BackgroundTransparency = 1
+profileImage.BorderSizePixel = 0
+Instance.new("UICorner", profileImage).CornerRadius = UDim.new(0.5, 0)
+local profileImageStroke = Instance.new("UIStroke", profileImage)
+profileImageStroke.Color = Color3.fromRGB(255, 50, 50)
+profileImageStroke.Thickness = 2
+
+local profileNameLabel = Instance.new("TextLabel", profilePage)
+profileNameLabel.Size = UDim2.new(1, -40, 0, 30)
+profileNameLabel.Position = UDim2.new(0, 20, 0.5, 0)
+profileNameLabel.BackgroundTransparency = 1
+profileNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+profileNameLabel.Font = Enum.Font.GothamBold
+profileNameLabel.TextSize = 22
+profileNameLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local profileIdLabel = Instance.new("TextLabel", profilePage)
+profileIdLabel.Size = UDim2.new(1, -40, 0, 20)
+profileIdLabel.Position = UDim2.new(0, 20, 0.6, 0)
+profileIdLabel.BackgroundTransparency = 1
+profileIdLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+profileIdLabel.Font = Enum.Font.Gotham
+profileIdLabel.TextSize = 16
+profileIdLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local profileAgeLabel = Instance.new("TextLabel", profilePage)
+profileAgeLabel.Size = UDim2.new(1, -40, 0, 20)
+profileAgeLabel.Position = UDim2.new(0, 20, 0.7, 0)
+profileAgeLabel.BackgroundTransparency = 1
+profileAgeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+profileAgeLabel.Font = Enum.Font.Gotham
+profileAgeLabel.TextSize = 16
+profileAgeLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+
+-- Logique pour remplir les informations de profil
+spawn(function()
+    local userId = player.UserId
+    local success, url = pcall(function()
+        return game.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+    if success then
+        profileImage.Image = url
+    end
+    profileNameLabel.Text = player.Name
+    profileIdLabel.Text = "ID: " .. userId
+    profileAgeLabel.Text = "Ancienneté: " .. player.AccountAge .. " jours"
+end)
+
+
 settingsBtn.MouseButton1Click:Connect(function()
     settingsBtn.Visible = false
     backArrowBtn.Visible = true
     settingsPage.Visible = true
     mainPage.Visible = false
+    profilePage.Visible = false
 end)
 
 backArrowBtn.MouseButton1Click:Connect(function()
@@ -400,11 +561,8 @@ backArrowBtn.MouseButton1Click:Connect(function()
     infoPage.Visible = false
     gamePage.Visible = false
     hackPage.Visible = false
-    
-    -- Cache les nouvelles pages
-    personalInfoPage.Visible = false
     graphPage.Visible = false
-
+    profilePage.Visible = false
     mainPage.Visible = true
 end)
 
@@ -454,12 +612,10 @@ _G.flyEnabled = false
 _G.speedEnabled = false
 _G.jumpEnabled = false
 _G.noclip = false
-_G.killAura = false
+_G.killAuraEnabled = false
 _G.nameViewEnabled = false
 _G.trackerEnabled = false
 _G.spectatingEnabled = false
-_G.lightEnabled = false
-_G.fpsEnabled = false
 
 local buttonYMain = 0.1
 local spacing = 0.18
@@ -538,8 +694,8 @@ createButton("Vol", mainPage, "flyEnabled", function(state)
         conn = RS.Heartbeat:Connect(function(dt)
             if not _G.flyEnabled then
                 conn:Disconnect()
-                if bv and bv.Parent == hrp then bv:Destroy() end
-                if bg and bg.Parent == hrp then bg:Destroy() end
+                bv:Destroy()
+                bg:Destroy()
                 humanoid.PlatformStand = false
                 return
             end
@@ -587,7 +743,7 @@ buttonYMain = buttonYMain + spacing
 
 createButton("Noclip", mainPage, "noclip", function(state)
     RS.Stepped:Connect(function()
-        if _G.noclip and character then
+        if _G.noclip then
             for _,part in pairs(character:GetDescendants()) do
                 if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
                     part.CanCollide = false
@@ -605,7 +761,7 @@ local function createHackButton(name, toggleVar, callback)
     return btn
 end
 
-createHackButton("Kill Aura", "killAura", function(state) end)
+createHackButton("Kill Aura", "killAuraEnabled", function(state) end)
 
 local nameTags = {}
 createHackButton("Name View", "nameViewEnabled", function(state)
@@ -766,207 +922,14 @@ rightArrowBtn.MouseButton1Click:Connect(function()
     end
 end)
 
---- NOUVEAU : BOUTON GRAPH DANS LES PARAMÈTRES ---
-local graphBtn = Instance.new("TextButton", settingsPage)
-graphBtn.Size = UDim2.new(0,180,0,35)
-graphBtn.Position = UDim2.new(0.5,-90,0.65,0)
-graphBtn.Text = "Graph"
-graphBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-graphBtn.TextColor3 = Color3.fromRGB(255,255,255)
-graphBtn.Font = Enum.Font.GothamBold
-graphBtn.TextSize = 20
-Instance.new("UICorner", graphBtn).CornerRadius = UDim.new(0,10)
-Instance.new("UIStroke", graphBtn).Color = Color3.fromRGB(255,50,50)
+--- FIN DU NOUVEAU BOUTON SPECTATEUR ---
 
---- NOUVEAU : PAGE GRAPH ---
-local graphPage = Instance.new("Frame", frame)
-graphPage.Size = UDim2.new(1,0,1,-45)
-graphPage.Position = UDim2.new(0,0,0,45)
-graphPage.BackgroundTransparency = 1
-local graphGradient = Instance.new("UIGradient", graphPage)
-graphGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
-graphPage.Visible = false
-
-graphBtn.MouseButton1Click:Connect(function()
-    settingsPage.Visible = false
-    graphPage.Visible = true
-end)
-
-local buttonYGraph = 0.1
-local function createGraphButton(name, toggleVar, callback)
-    local btn = createButton(name, graphPage, toggleVar, callback, buttonYGraph)
-    buttonYGraph = buttonYGraph + spacing
-    return btn
-end
-
--- Bouton Lumière
-local light = nil
-createGraphButton("Lumière", "lightEnabled", function(state)
-    if state then
-        if light then light:Destroy() end
-        light = Instance.new("PointLight", character.HumanoidRootPart)
-        light.Name = "ShadowLight"
-        light.Range = 25
-        light.Brightness = 2
-        light.Color = Color3.fromRGB(255, 255, 200)
-    else
-        if light then
-            light:Destroy()
-            light = nil
-        end
-    end
-end)
-
--- Bouton FPS
-createGraphButton("FPS", "fpsEnabled", function(state)
-    local lighting = game:GetService("Lighting")
-    if state then
-        -- Tente d'améliorer la fluidité en désactivant les effets qui consomment des ressources
-        lighting.Shadows = false
-        lighting.GlobalShadows = false
-        lighting.Ambient = Color3.new(0,0,0)
-        lighting.Brightness = 0.5
-    else
-        -- Rétablit les paramètres par défaut (ou les plus courants)
-        lighting.Shadows = true
-        lighting.GlobalShadows = true
-        lighting.Ambient = Color3.fromRGB(48, 48, 48)
-        lighting.Brightness = 1
-    end
-end)
-
-
---- NOUVEAU : PAGE D'INFORMATION PERSONNELLE ---
-local personalInfoPage = Instance.new("Frame", frame)
-personalInfoPage.Size = UDim2.new(1,0,1,-45)
-personalInfoPage.Position = UDim2.new(0,0,0,45)
-personalInfoPage.BackgroundTransparency = 1
-local personalInfoGradient = Instance.new("UIGradient", personalInfoPage)
-personalInfoGradient.Color = ColorSequence.new(Color3.fromRGB(25, 25, 25), Color3.fromRGB(15, 15, 15))
-personalInfoPage.Visible = false
-
-local avatarImage = Instance.new("ImageLabel", personalInfoPage)
-avatarImage.Size = UDim2.new(0, 100, 0, 100)
-avatarImage.Position = UDim2.new(0.5, -50, 0.1, 0)
-avatarImage.BackgroundTransparency = 1
-Instance.new("UICorner", avatarImage).CornerRadius = UDim.new(0.5, 0)
-Instance.new("UIStroke", avatarImage).Color = Color3.fromRGB(255, 50, 50)
-Instance.new("UIStroke", avatarImage).Thickness = 2
-Instance.new("UIAspectRatioConstraint", avatarImage).AspectRatio = 1
-spawn(function()
-    local success, url = pcall(function()
-        return game.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
-    end)
-    if success then
-        avatarImage.Image = url
-    end
-end)
-
-local infoLayout = Instance.new("UIListLayout", personalInfoPage)
-infoLayout.FillDirection = Enum.FillDirection.Vertical
-infoLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-infoLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-infoLayout.Padding = UDim.new(0, 10)
-
-local infoTitle = Instance.new("TextLabel", personalInfoPage)
-infoTitle.Size = UDim2.new(1,0,0,30)
-infoTitle.Text = "Informations du compte"
-infoTitle.TextColor3 = Color3.fromRGB(255,50,50)
-infoTitle.Font = Enum.Font.GothamBold
-infoTitle.TextSize = 24
-infoTitle.BackgroundTransparency = 1
-
-local nameLabel = Instance.new("TextLabel", personalInfoPage)
-nameLabel.Size = UDim2.new(1,0,0,25)
-nameLabel.Text = "Nom: "..player.Name
-nameLabel.TextColor3 = Color3.fromRGB(255,255,255)
-nameLabel.Font = Enum.Font.Gotham
-nameLabel.TextSize = 18
-nameLabel.BackgroundTransparency = 1
-
-local idLabel = Instance.new("TextLabel", personalInfoPage)
-idLabel.Size = UDim2.new(1,0,0,25)
-idLabel.Text = "ID: "..player.UserId
-idLabel.TextColor3 = Color3.fromRGB(255,255,255)
-idLabel.Font = Enum.Font.Gotham
-idLabel.TextSize = 18
-idLabel.BackgroundTransparency = 1
-
-local accountAgeLabel = Instance.new("TextLabel", personalInfoPage)
-accountAgeLabel.Size = UDim2.new(1,0,0,25)
-accountAgeLabel.TextColor3 = Color3.fromRGB(255,255,255)
-accountAgeLabel.Font = Enum.Font.Gotham
-accountAgeLabel.TextSize = 18
-accountAgeLabel.BackgroundTransparency = 1
-spawn(function()
-    local days = math.floor((os.time() - os.time(player.AccountAge.year, player.AccountAge.month, player.AccountAge.day)) / 86400)
-    accountAgeLabel.Text = "Jours d'ancienneté: "..days
-end)
-
-local function showPage(pageToShow)
-    local allPages = {mainPage, settingsPage, infoPage, gamePage, hackPage, personalInfoPage, graphPage}
-    for _, page in ipairs(allPages) do
-        page.Visible = (page == pageToShow)
-    end
-end
-
--- Gestion des boutons
-settingsBtn.MouseButton1Click:Connect(function()
-    settingsBtn.Visible = false
-    backArrowBtn.Visible = true
-    showPage(settingsPage)
-end)
-
-backArrowBtn.MouseButton1Click:Connect(function()
-    settingsBtn.Visible = true
-    backArrowBtn.Visible = false
-    showPage(mainPage)
-end)
-
-infoBtn.MouseButton1Click:Connect(function()
-    showPage(infoPage)
-    -- Lancement de la mise à jour des joueurs
-    spawn(function()
-        while infoPage.Visible do
-            createPlayerButtons()
-            wait(1)
-        end
-    end)
-end)
-gameSetBtn.MouseButton1Click:Connect(function()
-    showPage(gamePage)
-end)
-
-graphBtn.MouseButton1Click:Connect(function()
-    showPage(graphPage)
-end)
-
-hackBtn.MouseButton1Click:Connect(function()
-    showPage(hackPage)
-end)
-
--- NOUVEAU : Clic sur le titre pour afficher les informations personnelles
-title.MouseButton1Click:Connect(function()
-    settingsBtn.Visible = false
-    backArrowBtn.Visible = true
-    showPage(personalInfoPage)
-end)
-
-closeBtn.MouseButton1Click:Connect(function()
-    closeFrame(frame)
-    reopenBtn.Visible = true
-end)
-
-reopenBtn.MouseButton1Click:Connect(function()
-    openFrame(frame)
-    reopenBtn.Visible = false
-end)
 
 -- LOGIQUE GLOBALE DANS UNE BOUCLE
 RS.Heartbeat:Connect(function()
     local myPosition = character.HumanoidRootPart.Position
 
-    if _G.killAura and character and character:FindFirstChildOfClass("HumanoidRootPart") then
+    if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
         local hasAxe = false
         local tool = character:FindFirstChildOfClass("Tool")
         if tool and (tool.Name:lower():find("hache") or tool.Name:lower():find("axe")) then
@@ -1056,8 +1019,7 @@ animateColor(title)
 animateColor(reopenBtn)
 
 submitBtn.MouseButton1Click:Connect(function()
-    -- Correction ici : utiliser trim() pour enlever les espaces
-    if passBox.Text:trim() == "95741" then
+    if passBox.Text == "95741" then
         loadingLabel.Visible = true
         loadingBarFrame.Visible = true
         for i=1,100 do
