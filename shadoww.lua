@@ -465,7 +465,7 @@ _G.flyEnabled = false
 _G.speedEnabled = false
 _G.jumpEnabled = false
 _G.noclip = false
-_G.killAuraEnabled = false
+_G.killAura = false
 _G.nameViewEnabled = false
 _G.trackerEnabled = false
 _G.spectatingEnabled = false
@@ -616,7 +616,7 @@ local function createHackButton(name, toggleVar, callback)
     return btn
 end
 
-createHackButton("Kill Aura", "killAuraEnabled", function(state) end)
+createHackButton("Kill Aura", "killAura", function(state) end)
 
 local nameTags = {}
 createHackButton("Name View", "nameViewEnabled", function(state)
@@ -977,7 +977,7 @@ end)
 RS.Heartbeat:Connect(function()
     local myPosition = character.HumanoidRootPart.Position
 
-    if _G.killAuraEnabled and character and character:FindFirstChildOfClass("HumanoidRootPart") then
+    if _G.killAura and character and character:FindFirstChildOfClass("HumanoidRootPart") then
         local hasAxe = false
         local tool = character:FindFirstChildOfClass("Tool")
         if tool and (tool.Name:lower():find("hache") or tool.Name:lower():find("axe")) then
@@ -1067,7 +1067,7 @@ animateColor(title)
 animateColor(reopenBtn)
 
 submitBtn.MouseButton1Click:Connect(function()
-    if passBox.Text == "95741" then
+    if passBox.Text:trim() == "95741" then
         loadingLabel.Visible = true
         loadingBarFrame.Visible = true
         for i=1,100 do
