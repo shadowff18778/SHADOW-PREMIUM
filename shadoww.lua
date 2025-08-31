@@ -654,7 +654,7 @@ createHackButton("Tracker", "trackerEnabled", function(state)
 end)
 
 
---- NOUVEAU BOUTON SPECTATEUR ---
+--- BOUTON SPECTATEUR ET INTERFACE ---
 local leftArrowBtn = Instance.new("TextButton", gui)
 leftArrowBtn.Size = UDim2.new(0, 50, 0, 50)
 leftArrowBtn.Position = UDim2.new(0, 10, 0.5, -25)
@@ -687,9 +687,42 @@ local spectatorPlayers = {}
 local currentSpectatorIndex = 1
 local cameraConnection
 
+-- NOUVEAU : Label pour le nom du spectateur
+local spectatorNameLabel = Instance.new("TextLabel", gui)
+spectatorNameLabel.Size = UDim2.new(0, 250, 0, 30)
+spectatorNameLabel.Position = UDim2.new(0.5, -125, 0, 50) -- Centré, 50 pixels depuis le haut
+spectatorNameLabel.BackgroundTransparency = 1
+spectatorNameLabel.Font = Enum.Font.GothamBold
+spectatorNameLabel.TextSize = 25
+spectatorNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+spectatorNameLabel.TextScaled = false
+spectatorNameLabel.TextStrokeTransparency = 0.5
+spectatorNameLabel.Visible = false
+
+local spectatorColorAnimation
+local function startSpectatorNameAnimation()
+    if spectatorColorAnimation then spectatorColorAnimation:Disconnect() end
+    spectatorColorAnimation = spawn(function()
+        while spectatorNameLabel.Visible do
+            for i = 0, 1, 0.05 do
+                spectatorNameLabel.TextColor3 = Color3.fromHSV(i, 1, 1)
+                wait(0.01)
+            end
+        end
+    end)
+end
+
+local function stopSpectatorNameAnimation()
+    if spectatorColorAnimation then
+        spectatorColorAnimation:Disconnect()
+        spectatorColorAnimation = nil
+    end
+end
+
 createHackButton("Spectateur", "spectatingEnabled", function(state)
     leftArrowBtn.Visible = state
     rightArrowBtn.Visible = state
+    spectatorNameLabel.Visible = state
 
     if state then
         -- On entre en mode spectateur
@@ -708,19 +741,23 @@ createHackButton("Spectateur", "spectatingEnabled", function(state)
                 local target = spectatorPlayers[currentSpectatorIndex]
                 if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
                     camera.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 15) -- Déplace la caméra légèrement au-dessus et derrière le joueur
+                    spectatorNameLabel.Text = target.Name
                 end
             end)
+            startSpectatorNameAnimation()
         else
             -- Aucun joueur à observer, on désactive le mode
             _G.spectatingEnabled = false
             leftArrowBtn.Visible = false
             rightArrowBtn.Visible = false
+            spectatorNameLabel.Visible = false
             camera.CameraType = Enum.CameraType.Custom
         end
     else
         -- On quitte le mode spectateur
         if cameraConnection then cameraConnection:Disconnect() end
         camera.CameraType = Enum.CameraType.Custom
+        stopSpectatorNameAnimation()
     end
 end)
 
@@ -730,6 +767,7 @@ leftArrowBtn.MouseButton1Click:Connect(function()
         if currentSpectatorIndex < 1 then
             currentSpectatorIndex = #spectatorPlayers
         end
+        spectatorNameLabel.Text = spectatorPlayers[currentSpectatorIndex].Name
     end
 end)
 
@@ -739,6 +777,7 @@ rightArrowBtn.MouseButton1Click:Connect(function()
         if currentSpectatorIndex > #spectatorPlayers then
             currentSpectatorIndex = 1
         end
+        spectatorNameLabel.Text = spectatorPlayers[currentSpectatorIndex].Name
     end
 end)
 
